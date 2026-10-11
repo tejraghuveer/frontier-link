@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RDR2 Mobile Controller (Functional MVP)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Tabs -->
+  <header id="top-nav">
+    <div id="connection-pill" class="pill status-disconnected">DISCONNECTED</div>
+    <div class="tabs">
+      <button id="tab-btn-conn" class="tab-btn active" data-tab="screen-conn">1. Connection</button>
+      <button id="tab-btn-ctrl" class="tab-btn" data-tab="screen-ctrl">2. Controller</button>
+      <button id="tab-btn-diag" class="tab-btn" data-tab="screen-diag">3. Diagnostics</button>
+    </div>
+  </header>
+
+  <main id="app-container">
+
+    <!-- ==================== SCREEN A: CONNECTION ==================== -->
+    <section id="screen-conn" class="screen active">
+      <h2>Screen A: Host Connection & Authentication</h2>
+
+      <div class="card">
+        <div class="form-group">
+          <label for="server-host">Server Address (Host / IP:Port):</label>
+          <input type="text" id="server-host" placeholder="10.168.19.160:8000" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          <small id="detected-ip-hint">Default is the current browser origin host.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="pairing-pin">6-Digit Pairing PIN:</label>
+          <input type="tel" id="pairing-pin" maxlength="6" pattern="[0-9]{6}" placeholder="e.g. 123456" autocomplete="off">
+          <small>Check the laptop terminal output for the generated PIN.</small>
+        </div>
+
+        <div class="btn-row">
+          <button id="btn-connect" class="action-btn btn-green">Connect & Authenticate</button>
+          <button id="btn-disconnect" class="action-btn btn-gray" disabled>Disconnect</button>
+        </div>
+      </div>
+
+      <div class="card status-card">
+        <h3>Connection & Driver Status</h3>
+        <table class="simple-table">
+          <tr>
+            <td><strong>WebSocket Status:</strong></td>
+            <td id="status-ws">Disconnected</td>
+          </tr>
+          <tr>
+            <td><strong>Authentication:</strong></td>
+            <td id="status-auth">Not Authenticated</td>
+          </tr>
+          <tr>
+            <td><strong>Gamepad Backend:</strong></td>
+            <td id="status-backend">Checking...</td>
+          </tr>
+          <tr>
+            <td><strong>Backend Driver Status:</strong></td>
+            <td id="status-driver">Unknown</td>
+          </tr>
+        </table>
+        <div id="driver-alert" class="alert-box" style="display: none;"></div>
+      </div>
+    </section>
+
+    <!-- ==================== SCREEN B: CONTROLLER ==================== -->
+    <section id="screen-ctrl" class="screen">
+      <!-- Emergency Release Bar -->
+      <div class="emergency-bar">
+        <button id="btn-emergency-release" class="btn-emergency">EMERGENCY RELEASE ALL</button>
+        <span id="emergency-indicator" class="neutral-indicator">Inputs: Neutral</span>
+      </div>
+
+      <div class="controller-grid">
+        <!-- Left Column: LB, LT, Left Joystick, D-Pad -->
+        <div class="controller-col left-col">
+          <div class="shoulder-row">
+            <button class="gamepad-btn shoulder-btn" data-btn="LB">LB [Bumper]</button>
+            <div class="trigger-container">
+              <label for="slider-lt">LT (Aim): <span id="val-lt">0.00</span></label>
+              <input type="range" id="slider-lt" min="0" max="1" step="0.05" value="0">
+              <button class="gamepad-trigger-tap" data-trigger="lt" data-value="1.0">LT Full Aim</button>
+            </div>
+          </div>
+
+          <div class="joystick-wrapper">
+            <div class="joystick-label">Left Stick (Move / Arthur)</div>
+            <div id="joystick-left" class="joystick-pad">
+              <div id="joystick-left-knob" class="joystick-knob"></div>
+            </div>
+            <div class="stick-coords">LX: <span id="val-lx">0.00</span> | LY: <span id="val-ly">0.00</span></div>
+            <button class="gamepad-btn stick-click-btn" data-btn="L3">L3 [Sprint]</button>
+          </div>
+
+          <div class="dpad-wrapper">
+            <div class="dpad-title">D-Pad</div>
+            <div class="dpad-cross">
+              <button class="gamepad-dpad-btn dpad-up" data-dpad="UP" title="Whistle">▲<br><small>Whistle</small></button>
+              <div class="dpad-middle-row">
+                <button class="gamepad-dpad-btn dpad-left" data-dpad="LEFT">◀</button>
+                <div class="dpad-center"></div>
+                <button class="gamepad-dpad-btn dpad-right" data-dpad="RIGHT">▶</button>
+              </div>
+              <button class="gamepad-dpad-btn dpad-down" data-dpad="DOWN" title="Radar/Map">▼<br><small>Radar</small></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center Column: View / Menu & In-Game Mappings Note -->
+        <div class="controller-col center-col">
+          <div class="center-buttons">
+            <button class="gamepad-btn center-btn" data-btn="VIEW">VIEW [Map/Log]</button>
+            <button class="gamepad-btn center-btn" data-btn="MENU">MENU [Pause]</button>
+          </div>
+
+          <div class="mapping-note">
+            <h4>RDR2 Starter Mappings</h4>
+            <ul>
+              <li><strong>LT</strong>: Aim Weapon</li>
+              <li><strong>RT</strong>: Fire / Attack</li>
+              <li><strong>A</strong>: Jump / Action</li>
+              <li><strong>B</strong>: Crouch / Cancel</li>
+              <li><strong>X</strong>: Reload / Dive</li>
+              <li><strong>Y</strong>: Mount Horse / Loot</li>
+              <li><strong>L3</strong>: Sprint</li>
+              <li><strong>R3</strong>: Eagle Eye / Look Behind</li>
+              <li><strong>D-Up</strong>: Horse Whistle</li>
+              <li><strong>D-Down</strong>: Radar Zoom</li>
+            </ul>
+            <small>Note: Configurable via RDR2 in-game controller settings.</small>
+          </div>
+        </div>
+
+        <!-- Right Column: RB, RT, Face Buttons (Y, X, B, A), Right Joystick -->
+        <div class="controller-col right-col">
+          <div class="shoulder-row">
+            <button class="gamepad-btn shoulder-btn" data-btn="RB">RB [Weapon Wheel]</button>
+            <div class="trigger-container">
+              <label for="slider-rt">RT (Fire): <span id="val-rt">0.00</span></label>
+              <input type="range" id="slider-rt" min="0" max="1" step="0.05" value="0">
+              <button class="gamepad-trigger-tap" data-trigger="rt" data-value="1.0">RT Full Fire</button>
+            </div>
+          </div>
+
+          <div class="face-buttons-wrapper">
+            <div class="face-diamond">
+              <button class="gamepad-btn face-btn btn-y" data-btn="Y">Y<br><small>Mount</small></button>
+              <div class="face-middle-row">
+                <button class="gamepad-btn face-btn btn-x" data-btn="X">X<br><small>Reload</small></button>
+                <button class="gamepad-btn face-btn btn-b" data-btn="B">B<br><small>Crouch</small></button>
+              </div>
+              <button class="gamepad-btn face-btn btn-a" data-btn="A">A<br><small>Jump</small></button>
+            </div>
+          </div>
+
+          <div class="joystick-wrapper">
+            <div class="joystick-label">Right Stick (Camera / Look)</div>
+            <div id="joystick-right" class="joystick-pad">
+              <div id="joystick-right-knob" class="joystick-knob"></div>
+            </div>
+            <div class="stick-coords">RX: <span id="val-rx">0.00</span> | RY: <span id="val-ry">0.00</span></div>
+            <button class="gamepad-btn stick-click-btn" data-btn="R3">R3 [Eagle Eye]</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SCREEN C: DIAGNOSTICS ==================== -->
+    <section id="screen-diag" class="screen">
+      <h2>Screen C: Live Diagnostics & Hardware Test Panel</h2>
+
+      <div class="card">
+        <h3>Live Diagnostics Metrics</h3>
+        <table class="diag-table">
+          <tr><td>WebSocket Connection:</td><td id="diag-ws-status">Disconnected</td></tr>
+          <tr><td>Pairing / Auth Status:</td><td id="diag-auth-status">Not Authenticated</td></tr>
+          <tr><td>Gamepad Backend Initialized:</td><td id="diag-backend-init">No</td></tr>
+          <tr><td>Backend Type / Driver:</td><td id="diag-backend-type">Unknown</td></tr>
+          <tr><td>WebSocket RTT Latency:</td><td id="diag-rtt">-- ms</td></tr>
+          <tr><td>One-Way Network Latency (Est.):</td><td id="diag-oneway-net">-- ms</td></tr>
+          <tr><td>Backend Processing Duration:</td><td id="diag-proc-time">-- ms</td></tr>
+          <tr><td>Estimated Touch-to-Gamepad:</td><td id="diag-est-e2e">-- ms</td></tr>
+          <tr><td>Input Packet Frequency:</td><td id="diag-packet-hz">-- Hz</td></tr>
+          <tr><td>Rejected Packets:</td><td id="diag-rejected-pkts">0</td></tr>
+          <tr><td>Watchdog Activations:</td><td id="diag-watchdog-acts">0</td></tr>
+          <tr><td>Total Disconnects:</td><td id="diag-disconnects">0</td></tr>
+          <tr><td>Messages Sent / Acked:</td><td id="diag-msg-counts">0 / 0</td></tr>
+          <tr><td>Last Input Message Time:</td><td id="diag-last-input-time">--</td></tr>
+          <tr><td>Current Joysticks (LX, LY, RX, RY):</td><td id="diag-axes">0.00, 0.00, 0.00, 0.00</td></tr>
+          <tr><td>Current Triggers (LT, RT):</td><td id="diag-triggers">0.00, 0.00</td></tr>
+          <tr><td>Currently Pressed Buttons:</td><td id="diag-held-buttons">None</td></tr>
+          <tr><td>Currently Active D-Pad:</td><td id="diag-held-dpad">None</td></tr>
+          <tr><td>Last Error:</td><td id="diag-last-error">None</td></tr>
+          <tr><td>Last Release-All Event:</td><td id="diag-last-release">None</td></tr>
+          <tr><td>Adapter Verification Level:</td><td id="diag-verif-level">NOT TESTED</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>Individual Hardware Test Buttons</h3>
+        <p><small>Press any button below to send an isolated test pulse and verify end-to-end receipt:</small></p>
+
+        <div class="test-btn-group">
+          <strong>Buttons:</strong>
+          <button class="test-pulse-btn" data-test="btn" data-name="A">Test A</button>
+          <button class="test-pulse-btn" data-test="btn" data-name="B">Test B</button>
+          <button class="test-pulse-btn" data-test="btn" data-name="X">Test X</button>
+          <button class="test-pulse-btn" data-test="btn" data-name="Y">Test Y</button>
+          <button class="test-pulse-btn" data-test="btn" data-name="LB">Test LB</button>
+          <button class="test-pulse-btn" data-test="btn" data-name="RB">Test RB</button>
+          <button class="test-pulse-btn" data-test="btn" data-name="L3">Test L3</button>
+          <button class="test-pulse-btn" data-test="btn" data-name="R3">Test R3</button>
+          <button class="test-pulse-btn" data-test="btn" data-name="VIEW">Test VIEW</button>
+          <button class="test-pulse-btn" data-test="btn" data-name="MENU">Test MENU</button>
+        </div>
+
+        <div class="test-btn-group">
+          <strong>D-Pad:</strong>
+          <button class="test-pulse-btn" data-test="dpad" data-name="UP">Test D-UP</button>
+          <button class="test-pulse-btn" data-test="dpad" data-name="DOWN">Test D-DOWN</button>
+          <button class="test-pulse-btn" data-test="dpad" data-name="LEFT">Test D-LEFT</button>
+          <button class="test-pulse-btn" data-test="dpad" data-name="RIGHT">Test D-RIGHT</button>
+        </div>
+
+        <div class="test-btn-group">
+          <strong>Triggers:</strong>
+          <button class="test-pulse-btn" data-test="trigger" data-name="lt" data-val="0.5">Test LT 50%</button>
+          <button class="test-pulse-btn" data-test="trigger" data-name="lt" data-val="1.0">Test LT 100%</button>
+          <button class="test-pulse-btn" data-test="trigger" data-name="rt" data-val="0.5">Test RT 50%</button>
+          <button class="test-pulse-btn" data-test="trigger" data-name="rt" data-val="1.0">Test RT 100%</button>
+        </div>
+
+        <div class="test-btn-group">
+          <strong>Axes:</strong>
+          <button class="test-pulse-btn" data-test="axis" data-axis="lx" data-val="1.0">Left Stick Right (LX 1.0)</button>
+          <button class="test-pulse-btn" data-test="axis" data-axis="ly" data-val="1.0">Left Stick Up (LY 1.0)</button>
+          <button class="test-pulse-btn" data-test="axis" data-axis="rx" data-val="1.0">Right Stick Right (RX 1.0)</button>
+          <button class="test-pulse-btn" data-test="axis" data-axis="ry" data-val="1.0">Right Stick Up (RY 1.0)</button>
+          <button class="test-pulse-btn" data-test="reset">Center All Axes</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
