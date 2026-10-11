@@ -1,16 +1,26 @@
 /**
  * RDR2 Mobile Controller - Client Logic
  * Multi-touch Pointer-based controller interface with WebSocket streaming,
- * authoritative complete-state messaging, latency measurement, and diagnostics.
+ * authoritative complete-state messaging, latency measurement, diagnostics,
+ * user comfort settings, and zero-stuck-control safety guarantees.
  */
 
 (function () {
   "use strict";
 
   // --- Configuration & Constants ---
-  const DEADZONE = 0.12; // 12% deadzone
+  const DEFAULT_DEADZONE = 0.12;       // 12% default deadzone
+  const DEFAULT_SENSITIVITY = 1.0;     // 1.0x default sensitivity
+  const DEFAULT_SCALE = 100;           // 100% default scale
+  const DEFAULT_OPACITY = 90;          // 90% default opacity
   const PING_INTERVAL_MS = 1000;
-  const INPUT_THROTTLE_MS = 16; // ~60 Hz max transmission rate
+  const INPUT_THROTTLE_MS = 16;        // ~60 Hz max transmission rate
+
+  // Dynamic user preferences (loaded from localStorage)
+  let activeDeadzone = DEFAULT_DEADZONE;
+  let activeSensitivity = DEFAULT_SENSITIVITY;
+  let activeScale = DEFAULT_SCALE;
+  let activeOpacity = DEFAULT_OPACITY;
 
   // --- State Variables ---
   let socket = null;
@@ -61,6 +71,20 @@
   const valRx = document.getElementById("val-rx");
   const valRy = document.getElementById("val-ry");
 
+  // Settings DOM Elements
+  const btnOpenSettings = document.getElementById("btn-open-settings");
+  const btnCloseSettings = document.getElementById("btn-close-settings");
+  const btnResetSettings = document.getElementById("btn-reset-settings");
+  const settingsModal = document.getElementById("settings-modal");
+  const settingScaleSlider = document.getElementById("setting-ui-scale");
+  const settingOpacitySlider = document.getElementById("setting-ui-opacity");
+  const settingDeadzoneSlider = document.getElementById("setting-deadzone");
+  const settingSensitivitySlider = document.getElementById("setting-sensitivity");
+  const valSettingScale = document.getElementById("val-setting-scale");
+  const valSettingOpacity = document.getElementById("val-setting-opacity");
+  const valSettingDeadzone = document.getElementById("val-setting-deadzone");
+  const valSettingSensitivity = document.getElementById("val-setting-sensitivity");
+
   // Diagnostics DOM Elements
   const diagWsStatus = document.getElementById("diag-ws-status");
   const diagAuthStatus = document.getElementById("diag-auth-status");
@@ -95,18 +119,162 @@
     serverHostInput.value = window.location.host;
   }
 
+  // --- Settings Persistence & Loading ---
+  const PREFS_STORAGE_KEY = "rdr2_controller_prefs";
+
+  function applySettingsToUI() {
+    document.documentElement.style.setProperty("--ui-scale", (activeScale / 100).toString());
+    document.documentElement.style.setProperty("--ui-opacity", (activeOpacity / 100).toString());
+
+    if (settingScaleSlider) settingScaleSlider.value = activeScale;
+    if (settingOpacitySlider) settingOpacitySlider.value = activeOpacity;
+    if (settingDeadzoneSlider) settingDeadzoneSlider.value = Math.round(activeDeadzone * 100);
+    if (settingSensitivitySlider) settingSensitivitySlider.value = Math.round(activeSensitivity * 100);
+
+    if (valSettingScale) valSettingScale.textContent = `${activeScale}%`;
+    if (valSettingOpacity) valSettingOpacity.textContent = `${activeOpacity}%`;
+    if (valSettingDeadzone) valSettingDeadzone.textContent = `${Math.round(activeDeadzone * 100)}%`;
+    if (valSettingSensitivity) valSettingSensitivity.textContent = `${activeSensitivity.toFixed(1)}x`;
+  }
+
+  function saveSettings() {
+    try {
+      const prefs = {
+        scale: activeScale,
+        opacity: activeOpacity,
+        deadzone: Math.round(activeDeadzone * 100),
+        sensitivity: Math.round(activeSensitivity * 100)
+      };
+      localStorage.setItem(PREFS_STORAGE_KEY, JSON.stringify(prefs));
+    } catch (_) {
+      // LocalStorage may fail in private browsing mode; fail gracefully
+    }
+  }
+
+  function loadSettings() {
+    try {
+      const raw = localStorage.getItem(PREFS_STORAGE_KEY);
+      if (raw) {
+        const prefs = JSON.parse(raw);
+        if (typeof prefs.scale === "number" && prefs.scale >= 80 && prefs.scale <= 125) {
+          activeScale = prefs.scale;
+        }
+        if (typeof prefs.opacity === "number" && prefs.opacity >= 50 && prefs.opacity <= 100) {
+          activeOpacity = prefs.opacity;
+        }
+        if (typeof prefs.deadzone === "number" && prefs.deadzone >= 5 && prefs.deadzone <= 25) {
+          activeDeadzone = prefs.deadzone / 100;
+        }
+        if (typeof prefs.sensitivity === "number" && prefs.sensitivity >= 70 && prefs.sensitivity <= 150) {
+          activeSensitivity = prefs.sensitivity / 100;
+        }
+      }
+    } catch (_) {
+      // Fallback to defaults
+      activeScale = DEFAULT_SCALE;
+      activeOpacity = DEFAULT_OPACITY;
+      activeDeadzone = DEFAULT_DEADZONE;
+      activeSensitivity = DEFAULT_SENSITIVITY;
+    }
+    applySettingsToUI();
+  }
+
+  loadSettings();
+
+  // Settings Event Handlers
+  if (btnOpenSettings && settingsModal) {
+    btnOpenSettings.addEventListener("click", () => {
+      settingsModal.classList.add("open");
+      settingsModal.setAttribute("aria-hidden", "false");
+    });
+  }
+
+  if (btnCloseSettings && settingsModal) {
+    btnCloseSettings.addEventListener("click", () => {
+      settingsModal.classList.remove("open");
+      settingsModal.setAttribute("aria-hidden", "true");
+    });
+  }
+
+  if (settingsModal) {
+    // Backdrop click dismisses modal
+    settingsModal.addEventListener("click", (e) => {
+      if (e.target === settingsModal) {
+        settingsModal.classList.remove("open");
+        settingsModal.setAttribute("aria-hidden", "true");
+      }
+    });
+  }
+
+  if (settingScaleSlider) {
+    settingScaleSlider.addEventListener("input", (e) => {
+      activeScale = parseInt(e.target.value, 10);
+      applySettingsToUI();
+      saveSettings();
+    });
+  }
+
+  if (settingOpacitySlider) {
+    settingOpacitySlider.addEventListener("input", (e) => {
+      activeOpacity = parseInt(e.target.value, 10);
+      applySettingsToUI();
+      saveSettings();
+    });
+  }
+
+  if (settingDeadzoneSlider) {
+    settingDeadzoneSlider.addEventListener("input", (e) => {
+      activeDeadzone = parseInt(e.target.value, 10) / 100;
+      applySettingsToUI();
+      saveSettings();
+    });
+  }
+
+  if (settingSensitivitySlider) {
+    settingSensitivitySlider.addEventListener("input", (e) => {
+      activeSensitivity = parseInt(e.target.value, 10) / 100;
+      applySettingsToUI();
+      saveSettings();
+    });
+  }
+
+  if (btnResetSettings) {
+    btnResetSettings.addEventListener("click", () => {
+      activeScale = DEFAULT_SCALE;
+      activeOpacity = DEFAULT_OPACITY;
+      activeDeadzone = DEFAULT_DEADZONE;
+      activeSensitivity = DEFAULT_SENSITIVITY;
+      applySettingsToUI();
+      saveSettings();
+    });
+  }
+
   // --- Tab Navigation ---
   const tabButtons = document.querySelectorAll(".tab-btn");
   const screens = document.querySelectorAll(".screen");
 
   tabButtons.forEach(btn => {
     btn.addEventListener("click", () => {
+      const targetId = btn.getAttribute("data-tab");
+      // If navigating away from controller, neutralize any held inputs for safety
+      if (targetId !== "screen-ctrl") {
+        resetAllInputControls();
+        if (isConnected && isAuthenticated) {
+          sendInputStateImmediate();
+        }
+      }
+
       tabButtons.forEach(b => b.classList.remove("active"));
       screens.forEach(s => s.classList.remove("active"));
       btn.classList.add("active");
-      const targetScreen = document.getElementById(btn.getAttribute("data-tab"));
+      const targetScreen = document.getElementById(targetId);
       if (targetScreen) targetScreen.classList.add("active");
     });
+  });
+
+  // --- Context Menu Suppression on Interactive Elements ---
+  document.querySelectorAll(".gamepad-btn, .gamepad-dpad-btn, .gamepad-trigger-tap, .joystick-pad, .trigger-slider-wrap").forEach(el => {
+    el.addEventListener("contextmenu", e => e.preventDefault());
   });
 
   // --- Status API Polling ---
@@ -134,7 +302,7 @@
           serverPacketHz = data.packet_frequency_hz;
         }
       }
-    } catch (err) {
+    } catch (_) {
       statusBackend.textContent = "Cannot reach server HTTP API";
       statusDriver.textContent = "Offline or unreachable";
     }
@@ -190,7 +358,6 @@
     socket.onopen = function () {
       isConnected = true;
       statusWs.textContent = "Socket Open. Authenticating...";
-      // Send authentication handshake
       socket.send(JSON.stringify({
         type: "auth",
         pin: pin
@@ -210,7 +377,7 @@
       handleSocketClose(`Socket closed (code: ${event.code}, reason: ${event.reason || "none"})`);
     };
 
-    socket.onerror = function (err) {
+    socket.onerror = function () {
       lastErrorMsg = "WebSocket encountered an error";
       diagLastError.textContent = lastErrorMsg;
     };
@@ -249,7 +416,6 @@
         statusAuth.textContent = `Authenticated (Session: ${currentSessionId.substring(0, 8)})`;
         if (msg.adapter) updateBackendStatusUI(msg.adapter);
         startPingTimer();
-        // Send initial neutral state
         sendInputStateImmediate();
         break;
 
@@ -445,10 +611,10 @@
     }
   }
 
-  // --- Button & Trigger Pointer Handlers (Multi-Touch) ---
+  // --- Button & Trigger Pointer Handlers (Multi-Touch + lostpointercapture) ---
   function setupButton(el, btnName) {
     el.addEventListener("pointerdown", e => {
-      el.setPointerCapture(e.pointerId);
+      try { el.setPointerCapture(e.pointerId); } catch (_) {}
       el.classList.add("pressed");
       heldButtons.add(btnName);
       scheduleInputSend();
@@ -456,13 +622,16 @@
 
     const release = e => {
       try { el.releasePointerCapture(e.pointerId); } catch (_) {}
-      el.classList.remove("pressed");
-      heldButtons.delete(btnName);
-      scheduleInputSend();
+      if (heldButtons.has(btnName)) {
+        el.classList.remove("pressed");
+        heldButtons.delete(btnName);
+        scheduleInputSend();
+      }
     };
 
     el.addEventListener("pointerup", release);
     el.addEventListener("pointercancel", release);
+    el.addEventListener("lostpointercapture", release);
   }
 
   document.querySelectorAll(".gamepad-btn").forEach(btn => {
@@ -476,7 +645,7 @@
     if (!dir) return;
 
     btn.addEventListener("pointerdown", e => {
-      btn.setPointerCapture(e.pointerId);
+      try { btn.setPointerCapture(e.pointerId); } catch (_) {}
       btn.classList.add("pressed");
       heldDpad.add(dir);
       scheduleInputSend();
@@ -484,13 +653,16 @@
 
     const release = e => {
       try { btn.releasePointerCapture(e.pointerId); } catch (_) {}
-      btn.classList.remove("pressed");
-      heldDpad.delete(dir);
-      scheduleInputSend();
+      if (heldDpad.has(dir)) {
+        btn.classList.remove("pressed");
+        heldDpad.delete(dir);
+        scheduleInputSend();
+      }
     };
 
     btn.addEventListener("pointerup", release);
     btn.addEventListener("pointercancel", release);
+    btn.addEventListener("lostpointercapture", release);
   });
 
   // Trigger Sliders
@@ -511,21 +683,21 @@
     });
   }
 
-  // Quick Trigger Tap Buttons
+  // Quick Trigger Tap Buttons (Aim & Fire)
   document.querySelectorAll(".gamepad-trigger-tap").forEach(btn => {
     const trig = btn.getAttribute("data-trigger");
     const targetVal = parseFloat(btn.getAttribute("data-value") || "1.0");
 
     btn.addEventListener("pointerdown", e => {
-      btn.setPointerCapture(e.pointerId);
+      try { btn.setPointerCapture(e.pointerId); } catch (_) {}
       btn.classList.add("pressed");
       triggers[trig] = targetVal;
       if (trig === "lt") {
-        sliderLt.value = targetVal;
-        valLt.textContent = targetVal.toFixed(2);
+        if (sliderLt) sliderLt.value = targetVal;
+        if (valLt) valLt.textContent = targetVal.toFixed(2);
       } else {
-        sliderRt.value = targetVal;
-        valRt.textContent = targetVal.toFixed(2);
+        if (sliderRt) sliderRt.value = targetVal;
+        if (valRt) valRt.textContent = targetVal.toFixed(2);
       }
       scheduleInputSend();
     });
@@ -535,17 +707,18 @@
       btn.classList.remove("pressed");
       triggers[trig] = 0.0;
       if (trig === "lt") {
-        sliderLt.value = 0;
-        valLt.textContent = "0.00";
+        if (sliderLt) sliderLt.value = 0;
+        if (valLt) valLt.textContent = "0.00";
       } else {
-        sliderRt.value = 0;
-        valRt.textContent = "0.00";
+        if (sliderRt) sliderRt.value = 0;
+        if (valRt) valRt.textContent = "0.00";
       }
       scheduleInputSend();
     };
 
     btn.addEventListener("pointerup", release);
     btn.addEventListener("pointercancel", release);
+    btn.addEventListener("lostpointercapture", release);
   });
 
   // --- Analog Joysticks Implementation ---
@@ -559,7 +732,7 @@
     pad.addEventListener("pointerdown", e => {
       if (activePointerId !== null) return;
       activePointerId = e.pointerId;
-      pad.setPointerCapture(e.pointerId);
+      try { pad.setPointerCapture(e.pointerId); } catch (_) {}
       updateJoystickPosition(e);
     });
 
@@ -569,7 +742,7 @@
     });
 
     const release = e => {
-      if (e.pointerId !== activePointerId) return;
+      if (e.pointerId !== activePointerId && activePointerId !== null) return;
       try { pad.releasePointerCapture(e.pointerId); } catch (_) {}
       activePointerId = null;
 
@@ -578,19 +751,21 @@
       knob.style.top = "50%";
       axes[axisXKey] = 0.0;
       axes[axisYKey] = 0.0;
-      labelX.textContent = "0.00";
-      labelY.textContent = "0.00";
+      if (labelX) labelX.textContent = "0.00";
+      if (labelY) labelY.textContent = "0.00";
       scheduleInputSend();
     };
 
     pad.addEventListener("pointerup", release);
     pad.addEventListener("pointercancel", release);
+    pad.addEventListener("lostpointercapture", release);
 
     function updateJoystickPosition(e) {
       const rect = pad.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
       const maxRadius = (rect.width / 2) - 10;
+      if (maxRadius <= 0) return;
 
       let dx = e.clientX - centerX;
       let dy = e.clientY - centerY;
@@ -610,22 +785,22 @@
       // Invert Y so up is positive (matching standard game controllers)
       let normY = -(dy / maxRadius);
 
-      // Deadzone clamping
+      // Deadzone clamping with user-customizable deadzone
       const normMag = Math.hypot(normX, normY);
-      if (normMag < DEADZONE) {
+      if (normMag < activeDeadzone) {
         normX = 0.0;
         normY = 0.0;
       } else {
-        // Rescale smoothly outside deadzone
-        const scale = (normMag - DEADZONE) / (1.0 - DEADZONE) / normMag;
-        normX = Math.max(-1.0, Math.min(1.0, normX * scale));
-        normY = Math.max(-1.0, Math.min(1.0, normY * scale));
+        // Rescale smoothly outside deadzone with sensitivity factor
+        const scale = (normMag - activeDeadzone) / (1.0 - activeDeadzone) / normMag;
+        normX = Math.max(-1.0, Math.min(1.0, normX * scale * activeSensitivity));
+        normY = Math.max(-1.0, Math.min(1.0, normY * scale * activeSensitivity));
       }
 
       axes[axisXKey] = normX;
       axes[axisYKey] = normY;
-      labelX.textContent = normX.toFixed(2);
-      labelY.textContent = normY.toFixed(2);
+      if (labelX) labelX.textContent = normX.toFixed(2);
+      if (labelY) labelY.textContent = normY.toFixed(2);
       scheduleInputSend();
     }
   }
@@ -715,32 +890,32 @@
 
   // --- Diagnostics Update Timer ---
   setInterval(() => {
-    diagRtt.textContent = lastRttMs !== null ? `${lastRttMs} ms` : "-- ms";
-    diagProcTime.textContent = lastProcTimeMs !== null ? `${lastProcTimeMs} ms` : "-- ms";
+    if (diagRtt) diagRtt.textContent = lastRttMs !== null ? `${lastRttMs} ms` : "-- ms";
+    if (diagProcTime) diagProcTime.textContent = lastProcTimeMs !== null ? `${lastProcTimeMs} ms` : "-- ms";
 
-    // Distinguish measured network latency from processing time and estimated E2E latency
     const oneWayNetMs = lastRttMs !== null ? (lastRttMs / 2.0).toFixed(1) : "--";
-    diagOnewayNet.textContent = oneWayNetMs !== "--" ? `${oneWayNetMs} ms` : "-- ms";
+    if (diagOnewayNet) diagOnewayNet.textContent = oneWayNetMs !== "--" ? `${oneWayNetMs} ms` : "-- ms";
 
-    if (lastRttMs !== null && lastProcTimeMs !== null) {
-      const estE2e = ((lastRttMs / 2.0) + lastProcTimeMs).toFixed(2);
-      diagEstE2e.textContent = `${estE2e} ms`;
-    } else {
-      diagEstE2e.textContent = "-- ms";
+    if (diagEstE2e) {
+      if (lastRttMs !== null && lastProcTimeMs !== null) {
+        const estE2e = ((lastRttMs / 2.0) + lastProcTimeMs).toFixed(2);
+        diagEstE2e.textContent = `${estE2e} ms`;
+      } else {
+        diagEstE2e.textContent = "-- ms";
+      }
     }
 
-    // Reliability & diagnostic metrics
-    diagPacketHz.textContent = `${serverPacketHz} Hz`;
-    diagRejectedPkts.textContent = `${serverRejectedCount}`;
-    diagWatchdogActs.textContent = `${serverWatchdogCount}`;
-    diagDisconnects.textContent = `${serverDisconnectCount}`;
+    if (diagPacketHz) diagPacketHz.textContent = `${serverPacketHz} Hz`;
+    if (diagRejectedPkts) diagRejectedPkts.textContent = `${serverRejectedCount}`;
+    if (diagWatchdogActs) diagWatchdogActs.textContent = `${serverWatchdogCount}`;
+    if (diagDisconnects) diagDisconnects.textContent = `${serverDisconnectCount}`;
 
-    diagMsgCounts.textContent = `${messagesSent} / ${messagesAcked} (Last Ack Seq: ${lastAckSeq})`;
-    diagLastInputTime.textContent = lastInputSendTime ? `${new Date().toLocaleTimeString()}` : "--";
-    diagAxes.textContent = `${axes.lx.toFixed(2)}, ${axes.ly.toFixed(2)}, ${axes.rx.toFixed(2)}, ${axes.ry.toFixed(2)}`;
-    diagTriggers.textContent = `${triggers.lt.toFixed(2)}, ${triggers.rt.toFixed(2)}`;
-    diagHeldButtons.textContent = heldButtons.size > 0 ? Array.from(heldButtons).join(", ") : "None";
-    diagHeldDpad.textContent = heldDpad.size > 0 ? Array.from(heldDpad).join(", ") : "None";
+    if (diagMsgCounts) diagMsgCounts.textContent = `${messagesSent} / ${messagesAcked} (Last Ack Seq: ${lastAckSeq})`;
+    if (diagLastInputTime) diagLastInputTime.textContent = lastInputSendTime ? `${new Date().toLocaleTimeString()}` : "--";
+    if (diagAxes) diagAxes.textContent = `${axes.lx.toFixed(2)}, ${axes.ly.toFixed(2)}, ${axes.rx.toFixed(2)}, ${axes.ry.toFixed(2)}`;
+    if (diagTriggers) diagTriggers.textContent = `${triggers.lt.toFixed(2)}, ${triggers.rt.toFixed(2)}`;
+    if (diagHeldButtons) diagHeldButtons.textContent = heldButtons.size > 0 ? Array.from(heldButtons).join(", ") : "None";
+    if (diagHeldDpad) diagHeldDpad.textContent = heldDpad.size > 0 ? Array.from(heldDpad).join(", ") : "None";
   }, 200);
 
 })();

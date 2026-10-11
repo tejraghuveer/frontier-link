@@ -2,39 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>RDR2 Mobile Controller (Functional MVP)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>RDR2 Mobile Controller</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Top Navigation Tabs -->
+  <!-- Floating Portrait Rotation Hint (visible only in portrait) -->
+  <aside id="rotation-hint" class="rotation-hint" aria-live="polite">
+    <span class="hint-icon">📱↻</span>
+    <span>Rotate phone to <strong>Landscape</strong> for optimal two-thumb grip</span>
+  </aside>
+
+  <!-- Top Navigation Bar -->
   <header id="top-nav">
-    <div id="connection-pill" class="pill status-disconnected">DISCONNECTED</div>
-    <div class="tabs">
-      <button id="tab-btn-conn" class="tab-btn active" data-tab="screen-conn">1. Connection</button>
-      <button id="tab-btn-ctrl" class="tab-btn" data-tab="screen-ctrl">2. Controller</button>
-      <button id="tab-btn-diag" class="tab-btn" data-tab="screen-diag">3. Diagnostics</button>
+    <div class="nav-left">
+      <div id="connection-pill" class="pill status-disconnected">DISCONNECTED</div>
+    </div>
+    <nav class="tabs" aria-label="Main Navigation">
+      <button id="tab-btn-conn" class="tab-btn" data-tab="screen-conn">Connection</button>
+      <button id="tab-btn-ctrl" class="tab-btn active" data-tab="screen-ctrl">Controller</button>
+      <button id="tab-btn-diag" class="tab-btn" data-tab="screen-diag">Diagnostics</button>
+    </nav>
+    <div class="nav-right">
+      <button id="btn-open-settings" class="icon-btn" title="Controller Settings" aria-label="Controller Settings">⚙️</button>
     </div>
   </header>
 
   <main id="app-container">
 
     <!-- ==================== SCREEN A: CONNECTION ==================== -->
-    <section id="screen-conn" class="screen active">
-      <h2>Screen A: Host Connection & Authentication</h2>
+    <section id="screen-conn" class="screen">
+      <div class="card conn-card">
+        <h2>Host Connection & Authentication</h2>
 
-      <div class="card">
         <div class="form-group">
           <label for="server-host">Server Address (Host / IP:Port):</label>
-          <input type="text" id="server-host" placeholder="10.168.19.160:8000" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          <input type="text" id="server-host" placeholder="10.146.157.160:8000" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
           <small id="detected-ip-hint">Default is the current browser origin host.</small>
         </div>
 
         <div class="form-group">
           <label for="pairing-pin">6-Digit Pairing PIN:</label>
           <input type="tel" id="pairing-pin" maxlength="6" pattern="[0-9]{6}" placeholder="e.g. 123456" autocomplete="off">
-          <small>Check the laptop terminal output for the generated PIN.</small>
+          <small>Check the laptop terminal output for the generated pairing PIN.</small>
         </div>
 
         <div class="btn-row">
@@ -68,113 +79,142 @@
     </section>
 
     <!-- ==================== SCREEN B: CONTROLLER ==================== -->
-    <section id="screen-ctrl" class="screen">
-      <!-- Emergency Release Bar -->
-      <div class="emergency-bar">
-        <button id="btn-emergency-release" class="btn-emergency">EMERGENCY RELEASE ALL</button>
-        <span id="emergency-indicator" class="neutral-indicator">Inputs: Neutral</span>
-      </div>
+    <section id="screen-ctrl" class="screen active">
 
-      <div class="controller-grid">
-        <!-- Left Column: LB, LT, Left Joystick, D-Pad -->
-        <div class="controller-col left-col">
-          <div class="shoulder-row">
-            <button class="gamepad-btn shoulder-btn" data-btn="LB">LB [Bumper]</button>
-            <div class="trigger-container">
-              <label for="slider-lt">LT (Aim): <span id="val-lt">0.00</span></label>
-              <input type="range" id="slider-lt" min="0" max="1" step="0.05" value="0">
-              <button class="gamepad-trigger-tap" data-trigger="lt" data-value="1.0">LT Full Aim</button>
+      <!-- Compact Landscape Controller Layout -->
+      <div class="controller-layout">
+
+        <!-- Top Utility Center Bar -->
+        <div class="ctrl-top-strip">
+          <div class="util-center-group">
+            <button class="gamepad-btn center-btn btn-view" data-btn="VIEW">VIEW<span class="btn-sub">Map</span></button>
+            <div class="emergency-cluster">
+              <button id="btn-emergency-release" class="btn-emergency" title="Emergency Neutralize All Inputs">RELEASE ALL</button>
+              <span id="emergency-indicator" class="neutral-indicator">Neutral</span>
+            </div>
+            <button class="gamepad-btn center-btn btn-menu" data-btn="MENU">MENU<span class="btn-sub">Pause</span></button>
+          </div>
+        </div>
+
+        <!-- Left Thumb Zone (Movement, Aim, D-Pad) -->
+        <div class="thumb-wing left-wing">
+
+          <!-- Left Shoulders: LB Bumper & LT Trigger -->
+          <div class="shoulder-cluster left-shoulders">
+            <button class="gamepad-btn shoulder-btn bumper-btn" data-btn="LB">
+              <span class="btn-main">LB</span>
+              <span class="btn-sub">Wheel</span>
+            </button>
+            <div class="trigger-box trigger-left">
+              <button class="gamepad-trigger-tap trigger-btn" data-trigger="lt" data-value="1.0">
+                <span class="btn-main">LT</span>
+                <span class="btn-sub">Aim</span>
+              </button>
+              <div class="trigger-slider-wrap">
+                <input type="range" id="slider-lt" min="0" max="1" step="0.05" value="0" aria-label="Left Trigger Slider">
+                <span class="trigger-val" id="val-lt">0.00</span>
+              </div>
             </div>
           </div>
 
-          <div class="joystick-wrapper">
-            <div class="joystick-label">Left Stick (Move / Arthur)</div>
-            <div id="joystick-left" class="joystick-pad">
-              <div id="joystick-left-knob" class="joystick-knob"></div>
+          <!-- Left Primary: Analog Joystick & L3 Sprint -->
+          <div class="stick-pod left-stick-pod">
+            <div id="joystick-left" class="joystick-pad" aria-label="Left Analog Joystick Movement">
+              <div class="joystick-deadzone-guide"></div>
+              <div id="joystick-left-knob" class="joystick-knob">
+                <div class="knob-center-dot"></div>
+              </div>
             </div>
-            <div class="stick-coords">LX: <span id="val-lx">0.00</span> | LY: <span id="val-ly">0.00</span></div>
-            <button class="gamepad-btn stick-click-btn" data-btn="L3">L3 [Sprint]</button>
+            <div class="stick-footer">
+              <button class="gamepad-btn stick-click-btn btn-l3" data-btn="L3">L3 <span class="btn-sub">Sprint</span></button>
+              <span class="stick-coords">LX:<b id="val-lx">0.00</b> LY:<b id="val-ly">0.00</b></span>
+            </div>
           </div>
 
-          <div class="dpad-wrapper">
-            <div class="dpad-title">D-Pad</div>
+          <!-- Left Secondary: 4-Way D-Pad -->
+          <div class="dpad-pod">
             <div class="dpad-cross">
-              <button class="gamepad-dpad-btn dpad-up" data-dpad="UP" title="Whistle">▲<br><small>Whistle</small></button>
+              <button class="gamepad-dpad-btn dpad-up" data-dpad="UP" title="Horse Whistle">▲<small>Whistle</small></button>
               <div class="dpad-middle-row">
                 <button class="gamepad-dpad-btn dpad-left" data-dpad="LEFT">◀</button>
                 <div class="dpad-center"></div>
                 <button class="gamepad-dpad-btn dpad-right" data-dpad="RIGHT">▶</button>
               </div>
-              <button class="gamepad-dpad-btn dpad-down" data-dpad="DOWN" title="Radar/Map">▼<br><small>Radar</small></button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Center Column: View / Menu & In-Game Mappings Note -->
-        <div class="controller-col center-col">
-          <div class="center-buttons">
-            <button class="gamepad-btn center-btn" data-btn="VIEW">VIEW [Map/Log]</button>
-            <button class="gamepad-btn center-btn" data-btn="MENU">MENU [Pause]</button>
-          </div>
-
-          <div class="mapping-note">
-            <h4>RDR2 Starter Mappings</h4>
-            <ul>
-              <li><strong>LT</strong>: Aim Weapon</li>
-              <li><strong>RT</strong>: Fire / Attack</li>
-              <li><strong>A</strong>: Jump / Action</li>
-              <li><strong>B</strong>: Crouch / Cancel</li>
-              <li><strong>X</strong>: Reload / Dive</li>
-              <li><strong>Y</strong>: Mount Horse / Loot</li>
-              <li><strong>L3</strong>: Sprint</li>
-              <li><strong>R3</strong>: Eagle Eye / Look Behind</li>
-              <li><strong>D-Up</strong>: Horse Whistle</li>
-              <li><strong>D-Down</strong>: Radar Zoom</li>
-            </ul>
-            <small>Note: Configurable via RDR2 in-game controller settings.</small>
-          </div>
-        </div>
-
-        <!-- Right Column: RB, RT, Face Buttons (Y, X, B, A), Right Joystick -->
-        <div class="controller-col right-col">
-          <div class="shoulder-row">
-            <button class="gamepad-btn shoulder-btn" data-btn="RB">RB [Weapon Wheel]</button>
-            <div class="trigger-container">
-              <label for="slider-rt">RT (Fire): <span id="val-rt">0.00</span></label>
-              <input type="range" id="slider-rt" min="0" max="1" step="0.05" value="0">
-              <button class="gamepad-trigger-tap" data-trigger="rt" data-value="1.0">RT Full Fire</button>
+              <button class="gamepad-dpad-btn dpad-down" data-dpad="DOWN" title="Radar Map Zoom">▼<small>Radar</small></button>
             </div>
           </div>
 
-          <div class="face-buttons-wrapper">
-            <div class="face-diamond">
-              <button class="gamepad-btn face-btn btn-y" data-btn="Y">Y<br><small>Mount</small></button>
-              <div class="face-middle-row">
-                <button class="gamepad-btn face-btn btn-x" data-btn="X">X<br><small>Reload</small></button>
-                <button class="gamepad-btn face-btn btn-b" data-btn="B">B<br><small>Crouch</small></button>
+        </div>
+
+        <!-- Right Thumb Zone (Camera, Action Diamond, Fire) -->
+        <div class="thumb-wing right-wing">
+
+          <!-- Right Shoulders: RB Bumper & RT Fire Trigger -->
+          <div class="shoulder-cluster right-shoulders">
+            <div class="trigger-box trigger-right">
+              <button class="gamepad-trigger-tap trigger-btn" data-trigger="rt" data-value="1.0">
+                <span class="btn-main">RT</span>
+                <span class="btn-sub">Fire</span>
+              </button>
+              <div class="trigger-slider-wrap">
+                <input type="range" id="slider-rt" min="0" max="1" step="0.05" value="0" aria-label="Right Trigger Slider">
+                <span class="trigger-val" id="val-rt">0.00</span>
               </div>
-              <button class="gamepad-btn face-btn btn-a" data-btn="A">A<br><small>Jump</small></button>
+            </div>
+            <button class="gamepad-btn shoulder-btn bumper-btn" data-btn="RB">
+              <span class="btn-main">RB</span>
+              <span class="btn-sub">Cover</span>
+            </button>
+          </div>
+
+          <!-- Right Primary Actions: A/B/X/Y Diamond -->
+          <div class="face-pod">
+            <div class="face-diamond">
+              <button class="gamepad-btn face-btn btn-y" data-btn="Y">
+                <span class="face-letter">Y</span>
+                <span class="face-action">Mount</span>
+              </button>
+              <div class="face-middle-row">
+                <button class="gamepad-btn face-btn btn-x" data-btn="X">
+                  <span class="face-letter">X</span>
+                  <span class="face-action">Reload</span>
+                </button>
+                <button class="gamepad-btn face-btn btn-b" data-btn="B">
+                  <span class="face-letter">B</span>
+                  <span class="face-action">Crouch</span>
+                </button>
+              </div>
+              <button class="gamepad-btn face-btn btn-a" data-btn="A">
+                <span class="face-letter">A</span>
+                <span class="face-action">Jump</span>
+              </button>
             </div>
           </div>
 
-          <div class="joystick-wrapper">
-            <div class="joystick-label">Right Stick (Camera / Look)</div>
-            <div id="joystick-right" class="joystick-pad">
-              <div id="joystick-right-knob" class="joystick-knob"></div>
+          <!-- Right Primary: Analog Camera Joystick & R3 Eagle Eye -->
+          <div class="stick-pod right-stick-pod">
+            <div id="joystick-right" class="joystick-pad" aria-label="Right Analog Joystick Camera">
+              <div class="joystick-deadzone-guide"></div>
+              <div id="joystick-right-knob" class="joystick-knob">
+                <div class="knob-center-dot"></div>
+              </div>
             </div>
-            <div class="stick-coords">RX: <span id="val-rx">0.00</span> | RY: <span id="val-ry">0.00</span></div>
-            <button class="gamepad-btn stick-click-btn" data-btn="R3">R3 [Eagle Eye]</button>
+            <div class="stick-footer">
+              <button class="gamepad-btn stick-click-btn btn-r3" data-btn="R3">R3 <span class="btn-sub">Eagle Eye</span></button>
+              <span class="stick-coords">RX:<b id="val-rx">0.00</b> RY:<b id="val-ry">0.00</b></span>
+            </div>
           </div>
+
         </div>
+
       </div>
+
     </section>
 
     <!-- ==================== SCREEN C: DIAGNOSTICS ==================== -->
     <section id="screen-diag" class="screen">
-      <h2>Screen C: Live Diagnostics & Hardware Test Panel</h2>
-
-      <div class="card">
-        <h3>Live Diagnostics Metrics</h3>
+      <div class="card diag-card">
+        <h2>Live Diagnostics Metrics</h2>
         <table class="diag-table">
           <tr><td>WebSocket Connection:</td><td id="diag-ws-status">Disconnected</td></tr>
           <tr><td>Pairing / Auth Status:</td><td id="diag-auth-status">Not Authenticated</td></tr>
@@ -202,7 +242,7 @@
 
       <div class="card">
         <h3>Individual Hardware Test Buttons</h3>
-        <p><small>Press any button below to send an isolated test pulse and verify end-to-end receipt:</small></p>
+        <p><small>Send isolated test pulses to verify end-to-end receipt:</small></p>
 
         <div class="test-btn-group">
           <strong>Buttons:</strong>
@@ -246,6 +286,59 @@
     </section>
 
   </main>
+
+  <!-- ==================== SETTINGS & MAPPINGS MODAL ==================== -->
+  <aside id="settings-modal" class="settings-modal" aria-hidden="true">
+    <div class="settings-dialog">
+      <div class="settings-header">
+        <h3>Controller Settings</h3>
+        <button id="btn-close-settings" class="icon-btn close-btn" aria-label="Close Settings">✕</button>
+      </div>
+
+      <div class="settings-body">
+        <div class="setting-item">
+          <label for="setting-ui-scale">Control Scale: <span id="val-setting-scale">100%</span></label>
+          <input type="range" id="setting-ui-scale" min="80" max="125" step="5" value="100">
+        </div>
+
+        <div class="setting-item">
+          <label for="setting-ui-opacity">Button Opacity: <span id="val-setting-opacity">90%</span></label>
+          <input type="range" id="setting-ui-opacity" min="50" max="100" step="5" value="90">
+        </div>
+
+        <div class="setting-item">
+          <label for="setting-deadzone">Stick Deadzone: <span id="val-setting-deadzone">12%</span></label>
+          <input type="range" id="setting-deadzone" min="5" max="25" step="1" value="12">
+        </div>
+
+        <div class="setting-item">
+          <label for="setting-sensitivity">Stick Sensitivity: <span id="val-setting-sensitivity">1.0x</span></label>
+          <input type="range" id="setting-sensitivity" min="70" max="150" step="10" value="100">
+        </div>
+
+        <details class="mapping-note" open>
+          <summary><strong>RDR2 Starter Mappings</strong></summary>
+          <ul>
+            <li><strong>LT</strong>: Aim Weapon</li>
+            <li><strong>RT</strong>: Fire / Attack</li>
+            <li><strong>A</strong>: Jump / Action</li>
+            <li><strong>B</strong>: Crouch / Cancel</li>
+            <li><strong>X</strong>: Reload / Dive</li>
+            <li><strong>Y</strong>: Mount Horse / Loot</li>
+            <li><strong>L3</strong>: Sprint Toggle</li>
+            <li><strong>R3</strong>: Eagle Eye / Look Behind</li>
+            <li><strong>D-Up</strong>: Horse Whistle</li>
+            <li><strong>D-Down</strong>: Radar Zoom</li>
+          </ul>
+          <small>Mappings depend on in-game Red Dead Redemption 2 controller settings.</small>
+        </details>
+      </div>
+
+      <div class="settings-footer">
+        <button id="btn-reset-settings" class="action-btn btn-gray">Reset to Defaults</button>
+      </div>
+    </div>
+  </aside>
 
   <script src="app.js"></script>
 </body>
