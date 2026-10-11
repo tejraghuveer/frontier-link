@@ -3,28 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>RDR2 Mobile Controller</title>
+  <title>RDR2 Mobile Controller — Frontier Link</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="theme-rdr2">
 
-  <!-- Floating Portrait Rotation Hint (visible only in portrait) -->
+  <!-- Floating Portrait Rotation Hint (visible strictly in portrait) -->
   <aside id="rotation-hint" class="rotation-hint" aria-live="polite">
-    <span class="hint-icon">📱↻</span>
-    <span>Rotate phone to <strong>Landscape</strong> for optimal two-thumb grip</span>
+    <div class="hint-icon">📱↻</div>
+    <div class="hint-text">
+      <strong>Rotate to Landscape</strong>
+      <span>for authentic two-thumb RDR2 controller grip</span>
+    </div>
   </aside>
 
-  <!-- Top Navigation Bar -->
-  <header id="top-nav">
+  <!-- Top Navigation & HUD Bar -->
+  <header id="top-nav" class="hud-nav">
     <div class="nav-left">
       <div id="connection-pill" class="pill status-disconnected">DISCONNECTED</div>
+      <div id="hud-latency" class="hud-badge latency-badge" title="WebSocket Round-Trip Time">-- ms</div>
     </div>
+
     <nav class="tabs" aria-label="Main Navigation">
       <button id="tab-btn-conn" class="tab-btn" data-tab="screen-conn">Connection</button>
       <button id="tab-btn-ctrl" class="tab-btn active" data-tab="screen-ctrl">Controller</button>
       <button id="tab-btn-diag" class="tab-btn" data-tab="screen-diag">Diagnostics</button>
     </nav>
+
     <div class="nav-right">
+      <button id="btn-fullscreen" class="icon-btn" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">⛶</button>
       <button id="btn-open-settings" class="icon-btn" title="Controller Settings" aria-label="Controller Settings">⚙️</button>
     </div>
   </header>
@@ -49,7 +56,7 @@
         </div>
 
         <div class="btn-row">
-          <button id="btn-connect" class="action-btn btn-green">Connect & Authenticate</button>
+          <button id="btn-connect" class="action-btn btn-crimson">Connect & Authenticate</button>
           <button id="btn-disconnect" class="action-btn btn-gray" disabled>Disconnect</button>
         </div>
       </div>
@@ -81,128 +88,163 @@
     <!-- ==================== SCREEN B: CONTROLLER ==================== -->
     <section id="screen-ctrl" class="screen active">
 
-      <!-- Compact Landscape Controller Layout -->
-      <div class="controller-layout">
+      <!-- RDR2 Outlaw Crimson Fullscreen Controller Canvas -->
+      <div class="rdr2-canvas">
 
-        <!-- Top Utility Center Bar -->
-        <div class="ctrl-top-strip">
-          <div class="util-center-group">
-            <button class="gamepad-btn center-btn btn-view" data-btn="VIEW">VIEW<span class="btn-sub">Map</span></button>
-            <div class="emergency-cluster">
-              <button id="btn-emergency-release" class="btn-emergency" title="Emergency Neutralize All Inputs">RELEASE ALL</button>
-              <span id="emergency-indicator" class="neutral-indicator">Neutral</span>
-            </div>
-            <button class="gamepad-btn center-btn btn-menu" data-btn="MENU">MENU<span class="btn-sub">Pause</span></button>
-          </div>
-        </div>
+        <!-- ===== LEFT THUMB ZONE ===== -->
+        <div class="zone-left">
 
-        <!-- Left Thumb Zone (Movement, Aim, D-Pad) -->
-        <div class="thumb-wing left-wing">
-
-          <!-- Left Shoulders: LB Bumper & LT Trigger -->
-          <div class="shoulder-cluster left-shoulders">
-            <button class="gamepad-btn shoulder-btn bumper-btn" data-btn="LB">
-              <span class="btn-main">LB</span>
+          <!-- Left Triggers / Bumpers Cluster (Top Left) -->
+          <div class="trigger-cluster left-triggers">
+            <button class="gamepad-trigger-tap circle-trigger btn-lt" data-trigger="lt" data-value="1.0" aria-label="Left Trigger Aim">
+              <span class="btn-glyph">LT</span>
+              <span class="btn-sub">Aim</span>
+            </button>
+            <button class="gamepad-btn circle-bumper btn-lb" data-btn="LB" aria-label="Left Bumper Weapon Wheel">
+              <span class="btn-glyph">LB</span>
               <span class="btn-sub">Wheel</span>
             </button>
-            <div class="trigger-box trigger-left">
-              <button class="gamepad-trigger-tap trigger-btn" data-trigger="lt" data-value="1.0">
-                <span class="btn-main">LT</span>
-                <span class="btn-sub">Aim</span>
-              </button>
-              <div class="trigger-slider-wrap">
-                <input type="range" id="slider-lt" min="0" max="1" step="0.05" value="0" aria-label="Left Trigger Slider">
-                <span class="trigger-val" id="val-lt">0.00</span>
-              </div>
+
+            <!-- Compact Analog Slider (Optional Precision Pull) -->
+            <div class="trigger-slider-dock dock-lt">
+              <input type="range" id="slider-lt" min="0" max="1" step="0.05" value="0" aria-label="Left Trigger Analog Slider">
+              <span class="trigger-val" id="val-lt">0.00</span>
             </div>
           </div>
 
-          <!-- Left Primary: Analog Joystick & L3 Sprint -->
+          <!-- 4-Way D-Pad Disc (Bottom Left) -->
+          <div class="dpad-disc" aria-label="4-Way Directional Pad">
+            <button class="gamepad-dpad-btn dpad-slice dpad-up" data-dpad="UP" title="Horse Whistle" aria-label="D-Pad Up Horse Whistle">
+              <span class="arrow-glyph">▲</span>
+              <span class="dpad-sub">Whistle</span>
+            </button>
+            <button class="gamepad-dpad-btn dpad-slice dpad-left" data-dpad="LEFT" title="D-Pad Left" aria-label="D-Pad Left">
+              <span class="arrow-glyph">◀</span>
+            </button>
+            <div class="dpad-center-hub">
+              <div class="crest-dot"></div>
+            </div>
+            <button class="gamepad-dpad-btn dpad-slice dpad-right" data-dpad="RIGHT" title="D-Pad Right" aria-label="D-Pad Right">
+              <span class="arrow-glyph">▶</span>
+            </button>
+            <button class="gamepad-dpad-btn dpad-slice dpad-down" data-dpad="DOWN" title="Radar Map Zoom" aria-label="D-Pad Down Radar Zoom">
+              <span class="arrow-glyph">▼</span>
+              <span class="dpad-sub">Radar</span>
+            </button>
+          </div>
+
+          <!-- Left Analog Joystick Pod (Movement) -->
           <div class="stick-pod left-stick-pod">
             <div id="joystick-left" class="joystick-pad" aria-label="Left Analog Joystick Movement">
+              <div class="joystick-ring-outer"></div>
               <div class="joystick-deadzone-guide"></div>
               <div id="joystick-left-knob" class="joystick-knob">
-                <div class="knob-center-dot"></div>
+                <div class="knob-grip-rings"></div>
+                <div class="knob-center-dimple"></div>
               </div>
             </div>
-            <div class="stick-footer">
-              <button class="gamepad-btn stick-click-btn btn-l3" data-btn="L3">L3 <span class="btn-sub">Sprint</span></button>
+            <div class="stick-telemetry">
               <span class="stick-coords">LX:<b id="val-lx">0.00</b> LY:<b id="val-ly">0.00</b></span>
             </div>
           </div>
 
-          <!-- Left Secondary: 4-Way D-Pad -->
-          <div class="dpad-pod">
-            <div class="dpad-cross">
-              <button class="gamepad-dpad-btn dpad-up" data-dpad="UP" title="Horse Whistle">▲<small>Whistle</small></button>
-              <div class="dpad-middle-row">
-                <button class="gamepad-dpad-btn dpad-left" data-dpad="LEFT">◀</button>
-                <div class="dpad-center"></div>
-                <button class="gamepad-dpad-btn dpad-right" data-dpad="RIGHT">▶</button>
-              </div>
-              <button class="gamepad-dpad-btn dpad-down" data-dpad="DOWN" title="Radar Map Zoom">▼<small>Radar</small></button>
+        </div>
+
+        <!-- ===== CENTER UTILITY & STICK-CLICK HUB ===== -->
+        <div class="zone-center">
+
+          <!-- Upper Center Row: View, Emergency Neutral, Menu -->
+          <div class="center-top-row">
+            <button class="gamepad-btn center-circle-btn btn-view" data-btn="VIEW" aria-label="View Map">
+              <span class="symbol-glyph">⧉</span>
+              <span class="btn-sub">Map</span>
+            </button>
+
+            <!-- Prominent Crimson Emergency Release All Button -->
+            <div class="emergency-core">
+              <button id="btn-emergency-release" class="btn-emergency" title="Emergency Neutralize All Inputs" aria-label="Emergency Release All Inputs">
+                <span class="symbol-glyph">⚡</span>
+                <span class="emergency-txt">RELEASE</span>
+              </button>
+              <span id="emergency-indicator" class="neutral-badge">Neutral</span>
             </div>
+
+            <button class="gamepad-btn center-circle-btn btn-menu" data-btn="MENU" aria-label="Menu Pause">
+              <span class="symbol-glyph">☰</span>
+              <span class="btn-sub">Pause</span>
+            </button>
+          </div>
+
+          <!-- Lower Center Row: Left Stick (L3) & Right Stick (R3) Click Buttons (As in Reference) -->
+          <div class="center-bottom-row">
+            <button class="gamepad-btn stick-pill-btn btn-l3" data-btn="L3" aria-label="Left Stick L3 Sprint">
+              <span class="pill-main">Left Stick</span>
+              <span class="btn-sub">L3 • Sprint</span>
+            </button>
+            <button class="gamepad-btn stick-pill-btn btn-r3" data-btn="R3" aria-label="Right Stick R3 Eagle Eye">
+              <span class="pill-main">Right Stick</span>
+              <span class="btn-sub">R3 • Eagle Eye</span>
+            </button>
           </div>
 
         </div>
 
-        <!-- Right Thumb Zone (Camera, Action Diamond, Fire) -->
-        <div class="thumb-wing right-wing">
+        <!-- ===== RIGHT THUMB ZONE ===== -->
+        <div class="zone-right">
 
-          <!-- Right Shoulders: RB Bumper & RT Fire Trigger -->
-          <div class="shoulder-cluster right-shoulders">
-            <div class="trigger-box trigger-right">
-              <button class="gamepad-trigger-tap trigger-btn" data-trigger="rt" data-value="1.0">
-                <span class="btn-main">RT</span>
-                <span class="btn-sub">Fire</span>
-              </button>
-              <div class="trigger-slider-wrap">
-                <input type="range" id="slider-rt" min="0" max="1" step="0.05" value="0" aria-label="Right Trigger Slider">
-                <span class="trigger-val" id="val-rt">0.00</span>
-              </div>
-            </div>
-            <button class="gamepad-btn shoulder-btn bumper-btn" data-btn="RB">
-              <span class="btn-main">RB</span>
+          <!-- Right Triggers / Bumpers Cluster (Top Right) -->
+          <div class="trigger-cluster right-triggers">
+            <button class="gamepad-trigger-tap circle-trigger btn-rt" data-trigger="rt" data-value="1.0" aria-label="Right Trigger Fire">
+              <span class="btn-glyph">RT</span>
+              <span class="btn-sub">Fire</span>
+            </button>
+            <button class="gamepad-btn circle-bumper btn-rb" data-btn="RB" aria-label="Right Bumper Take Cover">
+              <span class="btn-glyph">RB</span>
               <span class="btn-sub">Cover</span>
             </button>
-          </div>
 
-          <!-- Right Primary Actions: A/B/X/Y Diamond -->
-          <div class="face-pod">
-            <div class="face-diamond">
-              <button class="gamepad-btn face-btn btn-y" data-btn="Y">
-                <span class="face-letter">Y</span>
-                <span class="face-action">Mount</span>
-              </button>
-              <div class="face-middle-row">
-                <button class="gamepad-btn face-btn btn-x" data-btn="X">
-                  <span class="face-letter">X</span>
-                  <span class="face-action">Reload</span>
-                </button>
-                <button class="gamepad-btn face-btn btn-b" data-btn="B">
-                  <span class="face-letter">B</span>
-                  <span class="face-action">Crouch</span>
-                </button>
-              </div>
-              <button class="gamepad-btn face-btn btn-a" data-btn="A">
-                <span class="face-letter">A</span>
-                <span class="face-action">Jump</span>
-              </button>
+            <!-- Compact Analog Slider (Optional Precision Pull) -->
+            <div class="trigger-slider-dock dock-rt">
+              <input type="range" id="slider-rt" min="0" max="1" step="0.05" value="0" aria-label="Right Trigger Analog Slider">
+              <span class="trigger-val" id="val-rt">0.00</span>
             </div>
           </div>
 
-          <!-- Right Primary: Analog Camera Joystick & R3 Eagle Eye -->
+          <!-- Right Analog Camera Joystick Pod -->
           <div class="stick-pod right-stick-pod">
             <div id="joystick-right" class="joystick-pad" aria-label="Right Analog Joystick Camera">
+              <div class="joystick-ring-outer"></div>
               <div class="joystick-deadzone-guide"></div>
               <div id="joystick-right-knob" class="joystick-knob">
-                <div class="knob-center-dot"></div>
+                <div class="knob-grip-rings"></div>
+                <div class="knob-center-dimple"></div>
               </div>
             </div>
-            <div class="stick-footer">
-              <button class="gamepad-btn stick-click-btn btn-r3" data-btn="R3">R3 <span class="btn-sub">Eagle Eye</span></button>
+            <div class="stick-telemetry">
               <span class="stick-coords">RX:<b id="val-rx">0.00</b> RY:<b id="val-ry">0.00</b></span>
             </div>
+          </div>
+
+          <!-- Right Action Face Diamond (Y, X, B, A) -->
+          <div class="face-diamond" aria-label="Action Buttons Diamond">
+            <button class="gamepad-btn circle-face-btn btn-y" data-btn="Y" aria-label="Y Button Mount Horse / Loot">
+              <span class="face-letter">Y</span>
+              <span class="btn-sub">Mount</span>
+            </button>
+            <div class="face-horizontal-row">
+              <button class="gamepad-btn circle-face-btn btn-x" data-btn="X" aria-label="X Button Reload / Dive">
+                <span class="face-letter">X</span>
+                <span class="btn-sub">Reload</span>
+              </button>
+              <button class="gamepad-btn circle-face-btn btn-b" data-btn="B" aria-label="B Button Crouch / Cancel">
+                <span class="face-letter">B</span>
+                <span class="btn-sub">Crouch</span>
+              </button>
+            </div>
+            <button class="gamepad-btn circle-face-btn btn-a" data-btn="A" aria-label="A Button Jump / Action">
+              <span class="face-letter">A</span>
+              <span class="btn-sub">Jump</span>
+            </button>
           </div>
 
         </div>
@@ -287,23 +329,23 @@
 
   </main>
 
-  <!-- ==================== SETTINGS & MAPPINGS MODAL ==================== -->
+  <!-- ==================== SETTINGS & ERGONOMICS DRAWER ==================== -->
   <aside id="settings-modal" class="settings-modal" aria-hidden="true">
     <div class="settings-dialog">
       <div class="settings-header">
-        <h3>Controller Settings</h3>
+        <h3>Frontier Controller Settings</h3>
         <button id="btn-close-settings" class="icon-btn close-btn" aria-label="Close Settings">✕</button>
       </div>
 
       <div class="settings-body">
         <div class="setting-item">
           <label for="setting-ui-scale">Control Scale: <span id="val-setting-scale">100%</span></label>
-          <input type="range" id="setting-ui-scale" min="80" max="125" step="5" value="100">
+          <input type="range" id="setting-ui-scale" min="80" max="130" step="5" value="100">
         </div>
 
         <div class="setting-item">
-          <label for="setting-ui-opacity">Button Opacity: <span id="val-setting-opacity">90%</span></label>
-          <input type="range" id="setting-ui-opacity" min="50" max="100" step="5" value="90">
+          <label for="setting-ui-opacity">Button Opacity: <span id="val-setting-opacity">95%</span></label>
+          <input type="range" id="setting-ui-opacity" min="50" max="100" step="5" value="95">
         </div>
 
         <div class="setting-item">
@@ -314,6 +356,27 @@
         <div class="setting-item">
           <label for="setting-sensitivity">Stick Sensitivity: <span id="val-setting-sensitivity">1.0x</span></label>
           <input type="range" id="setting-sensitivity" min="70" max="150" step="10" value="100">
+        </div>
+
+        <div class="setting-toggle-row">
+          <label class="toggle-label" for="setting-haptic">
+            <span>Haptic Feedback on Touch</span>
+            <input type="checkbox" id="setting-haptic" checked>
+          </label>
+        </div>
+
+        <div class="setting-toggle-row">
+          <label class="toggle-label" for="setting-sublabels">
+            <span>Show Action Subtitles (Aim, Fire...)</span>
+            <input type="checkbox" id="setting-sublabels" checked>
+          </label>
+        </div>
+
+        <div class="setting-toggle-row">
+          <label class="toggle-label" for="setting-slider-docks">
+            <span>Show Analog Trigger Sliders</span>
+            <input type="checkbox" id="setting-slider-docks" checked>
+          </label>
         </div>
 
         <details class="mapping-note" open>

@@ -1,8 +1,8 @@
 /**
- * RDR2 Mobile Controller - Client Logic
+ * RDR2 Mobile Controller — Frontier Link Client Logic
  * Multi-touch Pointer-based controller interface with WebSocket streaming,
  * authoritative complete-state messaging, latency measurement, diagnostics,
- * user comfort settings, and zero-stuck-control safety guarantees.
+ * user comfort settings, haptic touch feedback, and zero-stuck-control safety.
  */
 
 (function () {
@@ -12,7 +12,7 @@
   const DEFAULT_DEADZONE = 0.12;       // 12% default deadzone
   const DEFAULT_SENSITIVITY = 1.0;     // 1.0x default sensitivity
   const DEFAULT_SCALE = 100;           // 100% default scale
-  const DEFAULT_OPACITY = 90;          // 90% default opacity
+  const DEFAULT_OPACITY = 95;          // 95% default opacity
   const PING_INTERVAL_MS = 1000;
   const INPUT_THROTTLE_MS = 16;        // ~60 Hz max transmission rate
 
@@ -21,6 +21,9 @@
   let activeSensitivity = DEFAULT_SENSITIVITY;
   let activeScale = DEFAULT_SCALE;
   let activeOpacity = DEFAULT_OPACITY;
+  let hapticEnabled = true;
+  let sublabelsEnabled = true;
+  let sliderDocksEnabled = true;
 
   // --- State Variables ---
   let socket = null;
@@ -47,10 +50,12 @@
 
   // DOM Elements
   const connectionPill = document.getElementById("connection-pill");
+  const hudLatency = document.getElementById("hud-latency");
   const serverHostInput = document.getElementById("server-host");
   const pairingPinInput = document.getElementById("pairing-pin");
   const btnConnect = document.getElementById("btn-connect");
   const btnDisconnect = document.getElementById("btn-disconnect");
+  const btnFullscreen = document.getElementById("btn-fullscreen");
 
   const statusWs = document.getElementById("status-ws");
   const statusAuth = document.getElementById("status-auth");
@@ -80,6 +85,9 @@
   const settingOpacitySlider = document.getElementById("setting-ui-opacity");
   const settingDeadzoneSlider = document.getElementById("setting-deadzone");
   const settingSensitivitySlider = document.getElementById("setting-sensitivity");
+  const settingHapticCheck = document.getElementById("setting-haptic");
+  const settingSublabelsCheck = document.getElementById("setting-sublabels");
+  const settingSliderDocksCheck = document.getElementById("setting-slider-docks");
   const valSettingScale = document.getElementById("val-setting-scale");
   const valSettingOpacity = document.getElementById("val-setting-opacity");
   const valSettingDeadzone = document.getElementById("val-setting-deadzone");
@@ -119,6 +127,26 @@
     serverHostInput.value = window.location.host;
   }
 
+  // --- Haptic Feedback Helper ---
+  function triggerHaptic(ms = 15) {
+    if (hapticEnabled && navigator.vibrate) {
+      try {
+        navigator.vibrate(ms);
+      } catch (_) {}
+    }
+  }
+
+  // --- Fullscreen Toggle Helper ---
+  if (btnFullscreen) {
+    btnFullscreen.addEventListener("click", () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+  }
+
   // --- Settings Persistence & Loading ---
   const PREFS_STORAGE_KEY = "rdr2_controller_prefs";
 
@@ -126,10 +154,16 @@
     document.documentElement.style.setProperty("--ui-scale", (activeScale / 100).toString());
     document.documentElement.style.setProperty("--ui-opacity", (activeOpacity / 100).toString());
 
+    document.body.classList.toggle("hide-sublabels", !sublabelsEnabled);
+    document.body.classList.toggle("hide-slider-docks", !sliderDocksEnabled);
+
     if (settingScaleSlider) settingScaleSlider.value = activeScale;
     if (settingOpacitySlider) settingOpacitySlider.value = activeOpacity;
     if (settingDeadzoneSlider) settingDeadzoneSlider.value = Math.round(activeDeadzone * 100);
     if (settingSensitivitySlider) settingSensitivitySlider.value = Math.round(activeSensitivity * 100);
+    if (settingHapticCheck) settingHapticCheck.checked = hapticEnabled;
+    if (settingSublabelsCheck) settingSublabelsCheck.checked = sublabelsEnabled;
+    if (settingSliderDocksCheck) settingSliderDocksCheck.checked = sliderDocksEnabled;
 
     if (valSettingScale) valSettingScale.textContent = `${activeScale}%`;
     if (valSettingOpacity) valSettingOpacity.textContent = `${activeOpacity}%`;
@@ -143,11 +177,14 @@
         scale: activeScale,
         opacity: activeOpacity,
         deadzone: Math.round(activeDeadzone * 100),
-        sensitivity: Math.round(activeSensitivity * 100)
+        sensitivity: Math.round(activeSensitivity * 100),
+        haptic: hapticEnabled,
+        sublabels: sublabelsEnabled,
+        sliderDocks: sliderDocksEnabled
       };
       localStorage.setItem(PREFS_STORAGE_KEY, JSON.stringify(prefs));
     } catch (_) {
-      // LocalStorage may fail in private browsing mode; fail gracefully
+      // LocalStorage may fail gracefully
     }
   }
 
@@ -156,7 +193,7 @@
       const raw = localStorage.getItem(PREFS_STORAGE_KEY);
       if (raw) {
         const prefs = JSON.parse(raw);
-        if (typeof prefs.scale === "number" && prefs.scale >= 80 && prefs.scale <= 125) {
+        if (typeof prefs.scale === "number" && prefs.scale >= 80 && prefs.scale <= 130) {
           activeScale = prefs.scale;
         }
         if (typeof prefs.opacity === "number" && prefs.opacity >= 50 && prefs.opacity <= 100) {
@@ -168,13 +205,24 @@
         if (typeof prefs.sensitivity === "number" && prefs.sensitivity >= 70 && prefs.sensitivity <= 150) {
           activeSensitivity = prefs.sensitivity / 100;
         }
+        if (typeof prefs.haptic === "boolean") {
+          hapticEnabled = prefs.haptic;
+        }
+        if (typeof prefs.sublabels === "boolean") {
+          sublabelsEnabled = prefs.sublabels;
+        }
+        if (typeof prefs.sliderDocks === "boolean") {
+          sliderDocksEnabled = prefs.sliderDocks;
+        }
       }
     } catch (_) {
-      // Fallback to defaults
       activeScale = DEFAULT_SCALE;
       activeOpacity = DEFAULT_OPACITY;
       activeDeadzone = DEFAULT_DEADZONE;
       activeSensitivity = DEFAULT_SENSITIVITY;
+      hapticEnabled = true;
+      sublabelsEnabled = true;
+      sliderDocksEnabled = true;
     }
     applySettingsToUI();
   }
@@ -197,7 +245,6 @@
   }
 
   if (settingsModal) {
-    // Backdrop click dismisses modal
     settingsModal.addEventListener("click", (e) => {
       if (e.target === settingsModal) {
         settingsModal.classList.remove("open");
@@ -238,12 +285,38 @@
     });
   }
 
+  if (settingHapticCheck) {
+    settingHapticCheck.addEventListener("change", (e) => {
+      hapticEnabled = e.target.checked;
+      saveSettings();
+    });
+  }
+
+  if (settingSublabelsCheck) {
+    settingSublabelsCheck.addEventListener("change", (e) => {
+      sublabelsEnabled = e.target.checked;
+      applySettingsToUI();
+      saveSettings();
+    });
+  }
+
+  if (settingSliderDocksCheck) {
+    settingSliderDocksCheck.addEventListener("change", (e) => {
+      sliderDocksEnabled = e.target.checked;
+      applySettingsToUI();
+      saveSettings();
+    });
+  }
+
   if (btnResetSettings) {
     btnResetSettings.addEventListener("click", () => {
       activeScale = DEFAULT_SCALE;
       activeOpacity = DEFAULT_OPACITY;
       activeDeadzone = DEFAULT_DEADZONE;
       activeSensitivity = DEFAULT_SENSITIVITY;
+      hapticEnabled = true;
+      sublabelsEnabled = true;
+      sliderDocksEnabled = true;
       applySettingsToUI();
       saveSettings();
     });
@@ -256,7 +329,6 @@
   tabButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       const targetId = btn.getAttribute("data-tab");
-      // If navigating away from controller, neutralize any held inputs for safety
       if (targetId !== "screen-ctrl") {
         resetAllInputControls();
         if (isConnected && isAuthenticated) {
@@ -273,7 +345,7 @@
   });
 
   // --- Context Menu Suppression on Interactive Elements ---
-  document.querySelectorAll(".gamepad-btn, .gamepad-dpad-btn, .gamepad-trigger-tap, .joystick-pad, .trigger-slider-wrap").forEach(el => {
+  document.querySelectorAll(".gamepad-btn, .gamepad-dpad-btn, .gamepad-trigger-tap, .joystick-pad, .trigger-slider-dock, .btn-emergency").forEach(el => {
     el.addEventListener("contextmenu", e => e.preventDefault());
   });
 
@@ -452,13 +524,17 @@
       case "pong":
         if (msg.client_ts) {
           lastRttMs = Math.round(performance.now() - msg.client_ts);
+          if (hudLatency) {
+            hudLatency.textContent = `${lastRttMs} ms`;
+            hudLatency.style.color = lastRttMs < 30 ? "#56d364" : (lastRttMs < 75 ? "#f3be58" : "#ff6b77");
+          }
         }
         break;
 
       case "release_all_ack":
         lastReleaseAllInfo = `Released at ${new Date(msg.timestamp * 1000).toLocaleTimeString()} (${msg.reason})`;
         diagLastRelease.textContent = lastReleaseAllInfo;
-        emergencyIndicator.textContent = "Inputs: Neutral (Verified)";
+        emergencyIndicator.textContent = "Neutral";
         break;
 
       case "error":
@@ -494,6 +570,7 @@
       btnDisconnect.disabled = true;
       diagWsStatus.textContent = "Disconnected";
       diagAuthStatus.textContent = "Not Authenticated";
+      if (hudLatency) hudLatency.textContent = "-- ms";
     }
   }
 
@@ -552,9 +629,9 @@
       socket.send(JSON.stringify(payload));
       messagesSent++;
       lastInputSendTime = performance.now();
-      emergencyIndicator.textContent = (heldButtons.size > 0 || heldDpad.size > 0 || axes.lx !== 0 || axes.ly !== 0 || axes.rx !== 0 || axes.ry !== 0 || triggers.lt !== 0 || triggers.rt !== 0)
-        ? "Inputs: Active"
-        : "Inputs: Neutral";
+      const isActive = (heldButtons.size > 0 || heldDpad.size > 0 || axes.lx !== 0 || axes.ly !== 0 || axes.rx !== 0 || axes.ry !== 0 || triggers.lt !== 0 || triggers.rt !== 0);
+      emergencyIndicator.textContent = isActive ? "Active" : "Neutral";
+      emergencyIndicator.style.color = isActive ? "#ff7b84" : "";
     } catch (err) {
       console.error("Failed to send input state:", err);
     }
@@ -562,6 +639,7 @@
 
   function emergencyReleaseAll(reason = "Emergency button") {
     resetAllInputControls();
+    triggerHaptic(40);
     if (isConnected && socket && socket.readyState === WebSocket.OPEN) {
       try {
         socket.send(JSON.stringify({
@@ -572,7 +650,8 @@
         console.error("Error sending release_all:", e);
       }
     }
-    emergencyIndicator.textContent = "Inputs: Neutral (Reset)";
+    emergencyIndicator.textContent = "Neutral";
+    emergencyIndicator.style.color = "";
   }
 
   function resetAllInputControls() {
@@ -611,12 +690,13 @@
     }
   }
 
-  // --- Button & Trigger Pointer Handlers (Multi-Touch + lostpointercapture) ---
+  // --- Button & Trigger Pointer Handlers (Multi-Touch + lostpointercapture + Haptic) ---
   function setupButton(el, btnName) {
     el.addEventListener("pointerdown", e => {
       try { el.setPointerCapture(e.pointerId); } catch (_) {}
       el.classList.add("pressed");
       heldButtons.add(btnName);
+      triggerHaptic(12);
       scheduleInputSend();
     });
 
@@ -648,6 +728,7 @@
       try { btn.setPointerCapture(e.pointerId); } catch (_) {}
       btn.classList.add("pressed");
       heldDpad.add(dir);
+      triggerHaptic(14);
       scheduleInputSend();
     });
 
@@ -692,6 +773,7 @@
       try { btn.setPointerCapture(e.pointerId); } catch (_) {}
       btn.classList.add("pressed");
       triggers[trig] = targetVal;
+      triggerHaptic(18);
       if (trig === "lt") {
         if (sliderLt) sliderLt.value = targetVal;
         if (valLt) valLt.textContent = targetVal.toFixed(2);
@@ -733,6 +815,7 @@
       if (activePointerId !== null) return;
       activePointerId = e.pointerId;
       try { pad.setPointerCapture(e.pointerId); } catch (_) {}
+      triggerHaptic(8);
       updateJoystickPosition(e);
     });
 
