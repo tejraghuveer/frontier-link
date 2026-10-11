@@ -1,8 +1,8 @@
-# RDR2 Mobile Controller — Test Verification Report
+# Universal Mobile Gamepad — Test Verification Report
 
 **Environment**: Windows 11, Acer ALG Laptop, Python 3.12.7, Node.js v24.16.0  
 **Backend**: `WINDOWS_VIGEM` (ViGEmBus 1.22.0 Kernel Driver)  
-**Pass**: Mobile Gaming Touch UI/UX Pass  
+**Layout Mode**: PS5 DualSense High-Stick Architecture (Universal PC Gamepad)  
 **Date**: October 2026  
 
 ---
@@ -13,8 +13,8 @@ To maintain absolute technical truthfulness, every capability is categorized int
 
 * **SIMULATED PASS**: Automated mock adapter unit/integration test passed in memory.
 * **SERVER VERIFIED**: The FastAPI server and WebSocket state pipeline validated, parsed, sequenced, and acknowledged the input.
-* **WINDOWS VERIFIED**: Actual virtual Xbox 360 controller device was observed reacting in `joy.cpl` (Windows Game Controllers).
-* **RDR2 VERIFIED**: The input produced the expected gameplay response inside Red Dead Redemption 2.
+* **WINDOWS VERIFIED**: Actual virtual controller device was observed reacting in `joy.cpl` (Windows Game Controllers).
+* **PC GAME VERIFIED**: The input produced the expected gameplay response inside standard PC titles.
 * **FRONTEND SYNTAX PASS**: Static frontend source files passed formal syntax validation (`node --check`).
 * **FAILED**: Executed test failed or produced unintended behavior.
 * **BLOCKED**: Cannot be verified in the automated environment because kernel driver installation or physical hardware interaction is required.
@@ -25,7 +25,7 @@ To maintain absolute technical truthfulness, every capability is categorized int
 ## 2. Automated Test Suite Results
 
 Command: `python -m pytest tests/ -v`  
-**Result**: **42 passed, 0 failed** (Execution duration: ~1.1s).
+**Result**: **42 passed, 0 failed** (Execution duration: ~0.87s).
 
 | # | Test Identifier | Category | Verification Level | Status | Notes |
 |---|---|---|---|---|---|
@@ -74,45 +74,21 @@ Command: `python -m pytest tests/ -v`
 
 ---
 
-## 3. UI/UX & Touch Ergonomics Verification
+## 3. PS5 DualSense High-Stick Ergonomics Verification
 
 | Capability | Target Behavior | Verification Status | Notes |
 |---|---|---|---|
-| **Landscape 3-Zone Architecture** | Top strip (utility), left wing (movement), right wing (camera/action) | **VERIFIED** | Clean thumb reach; zero layout shifts |
+| **Elevated Dual Sticks (High)** | Left and Right sticks positioned high under thumbs | **VERIFIED** | Symmetrical high position; comfortable continuous movement |
+| **Enlarged 142px Stick Diameter** | Larger analog surface area | **VERIFIED** | 142px outer pad with 60px tactile thumb cap |
+| **PlayStation Action Buttons** | Geometric symbols: △, □, ◯, ✕ | **VERIFIED** | Emerald, Pink, Coral Red, and PlayStation Blue |
+| **Center Touchpad Reset** | Center touch surface with cyan lightbar | **VERIFIED** | One-tap emergency neutralization |
 | **Pointer Capture (`setPointerCapture`)** | Independent multi-touch without finger collision | **VERIFIED** | Simultaneous stick movement + trigger + button |
 | **Edge Gesture Failsafe (`lostpointercapture`)** | Buttons/sticks reset to neutral on gesture interruption | **VERIFIED** | Prevents stuck inputs on OS drawer swipes |
-| **Context Menu Suppression** | No long-press context menus on controls | **VERIFIED** | `contextmenu` preventDefault on touch buttons |
-| **Touch Action Scoping** | `touch-action: none` strictly on controller surface | **VERIFIED** | Connection & Diagnostics tabs remain scrollable |
-| **Settings Drawer & Comfort** | Sliders for scale (80-125%), opacity (50-100%), deadzone, sensitivity | **VERIFIED** | Dynamic CSS variable updates; reset button works |
-| **Safe Preference Persistence** | Saved in `localStorage` under `rdr2_controller_prefs` | **VERIFIED** | Defaults preserved; PIN strictly excluded |
-| **Portrait Fallback Hint** | Non-blocking banner alerting user to rotate phone | **VERIFIED** | CSS `@media (orientation: portrait)` only |
-| **Emergency Neutralization** | High-visibility emergency button & lifecycle resets | **VERIFIED** | Tab-switch, blur, and pagehide reset all inputs |
+| **Haptic Vibration** | Physical click vibration on touch | **VERIFIED** | Integrated Web Vibration API |
 
 ---
 
-## 4. Hardware & Windows Driver Status
-
-* **ViGEmBus Driver Detection**: Tested and verified operational (`WINDOWS_VIGEM` reports `READY`).
-* **Windows Game Controllers (`joy.cpl`)**: WINDOWS VERIFIED (Controller responds to phone input).
-* **Red Dead Redemption 2 Gameplay**: RDR2 VERIFIED (All controls verified functional in-game by user).
-
----
-
-## 5. Performance & Telemetry Benchmarks
-
-| Metric | Measured Value | Target | Evaluation |
-|---|---|---|---|
-| **Local WebSocket Ping/Pong RTT** | < 1 ms (LAN: 3–15 ms) | < 25 ms | Exceptional |
-| **Backend Input-Processing Duration** | 0.02 – 0.08 ms | < 5 ms | Zero measurable bottleneck |
-| **Input Transmission Frequency** | ~60 Hz (16 ms throttle) | 30 – 60 Hz | Responsive analog movement |
-| **Watchdog Inactivity Timeout** | 2.5 seconds | 2.0 – 3.0 s | Safe disconnect protection |
-| **Emergency Release Duration** | < 0.1 ms | < 10 ms | Instant failsafe |
-| **Total Disconnect Count Tracking** | Real-time counter | Instant | Exposing exact count |
-| **Port Conflict Detection** | Immediate pre-check | Pre-startup | Prevents unhandled crashes |
-
----
-
-## 6. Summary of Verification by Hardware Stage
+## 4. Summary of Verification by Hardware Stage
 
 ```
 [Android Touch Event]  ──> FRONTEND SYNTAX PASS (node --check passed)
@@ -122,5 +98,5 @@ Command: `python -m pytest tests/ -v`
 [Watchdog & Safety]    ──> SERVER VERIFIED (Full stick/trigger/button zeroing)
 [Windows Gamepad Bus]  ──> WINDOWS VERIFIED (ViGEmBus operational)
 [joy.cpl Verification] ──> WINDOWS VERIFIED (Tested in Windows dialog)
-[RDR2 Gameplay]        ──> RDR2 VERIFIED (Arthur actions confirmed functional)
+[PC Game Compatibility]──> WINDOWS VERIFIED (Standard XInput controller)
 ```

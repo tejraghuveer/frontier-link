@@ -1,30 +1,37 @@
 /* ==========================================================================
-   RDR2 Mobile Controller — Frontier Link Premium Outlaw Theme
-   Distraction-free crimson & matte-black handheld gaming interface.
+   Universal PC Gamepad — PS5 DualSense High-Stick Edition
+   Sculpted two-tone glacier white & midnight onyx with cyan LED halo lighting.
    ========================================================================== */
 
 :root {
   --ui-scale: 1;
   --ui-opacity: 0.95;
 
-  /* RDR2 Signature Crimson & Charcoal Palette */
-  --bg-deep: #090a0d;
-  --bg-canvas: #0f1015;
-  --panel-bg: rgba(20, 22, 28, 0.9);
-  --panel-border: rgba(255, 255, 255, 0.1);
+  /* PS5 DualSense Aesthetic Tokens */
+  --bg-deep: #07080d;
+  --bg-canvas: #0e111a;
+  --panel-bg: rgba(18, 22, 33, 0.92);
+  --panel-border: rgba(255, 255, 255, 0.12);
 
-  --rdr2-crimson: #9e0e1a;
-  --rdr2-crimson-bright: #c41424;
-  --rdr2-crimson-dark: #6e0610;
-  --rdr2-amber: #d99b26;
+  --ps-cyan: #00f0ff;
+  --ps-cyan-glow: rgba(0, 240, 255, 0.6);
+  --ps-blue: #3b82f6;
 
-  --stick-knob-base: #f0e6e6;
-  --stick-knob-shadow: #c9bcbc;
+  /* PlayStation Iconic Geometric Colors */
+  --color-triangle: #10b981;  /* Emerald Green */
+  --color-square: #ec4899;    /* Hot Pink */
+  --color-circle: #ef4444;    /* Coral Red */
+  --color-cross: #3b82f6;     /* PlayStation Blue */
 
   --text-white: #ffffff;
-  --text-cream: #eedcdc;
-  --text-muted: #8b929e;
-  --text-dim: #5c6370;
+  --text-cream: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  /* DualSense Two-Tone Button Finishes */
+  --btn-bg: linear-gradient(145deg, #242938 0%, #151824 100%);
+  --btn-border: rgba(255, 255, 255, 0.18);
+  --btn-active-bg: linear-gradient(145deg, #0284c7 0%, #0369a1 100%);
 
   /* Safe Area Insets */
   --safe-left: env(safe-area-inset-left, 0px);
@@ -53,7 +60,7 @@ html, body {
   position: fixed;
 }
 
-body.theme-rdr2 {
+body.theme-ps5 {
   display: flex;
   flex-direction: column;
   padding-left: var(--safe-left);
@@ -63,9 +70,9 @@ body.theme-rdr2 {
 /* ==================== PORTRAIT ROTATION HINT ==================== */
 .rotation-hint {
   display: none;
-  background: linear-gradient(90deg, #1f0709, #380b0f, #1f0709);
-  color: #ffcdd2;
-  border-bottom: 2px solid var(--rdr2-crimson);
+  background: linear-gradient(90deg, #0c1222, #16203a, #0c1222);
+  color: #bae6fd;
+  border-bottom: 2px solid var(--ps-cyan);
   padding: 8px 14px;
   font-size: 12px;
   align-items: center;
@@ -73,7 +80,7 @@ body.theme-rdr2 {
   gap: 12px;
   z-index: 1000;
   text-align: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8);
 }
 
 .rotation-hint .hint-icon {
@@ -103,26 +110,44 @@ body.theme-rdr2 {
   }
 }
 
-/* ==================== TOP HUD BAR ==================== */
+/* ==================== TOP NAVIGATION BAR ==================== */
 .hud-nav {
-  height: 38px;
-  min-height: 38px;
+  height: 40px;
+  min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(12, 13, 17, 0.92);
+  background: rgba(14, 17, 26, 0.95);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding: 0 10px;
   gap: 8px;
   z-index: 100;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-.nav-left, .nav-right {
+.nav-left, .nav-right, .nav-center {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.layout-select {
+  background: rgba(22, 28, 42, 0.95);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+}
+
+.layout-select:focus {
+  border-color: #00f0ff;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
 }
 
 .pill {
@@ -136,21 +161,21 @@ body.theme-rdr2 {
 }
 
 .status-disconnected {
-  background: rgba(158, 14, 26, 0.25);
-  color: #ff6b77;
-  border-color: rgba(158, 14, 26, 0.5);
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.4);
 }
 
 .status-connected {
-  background: rgba(46, 160, 67, 0.25);
-  color: #56d364;
-  border-color: rgba(46, 160, 67, 0.5);
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.4);
 }
 
 .status-connecting {
-  background: rgba(217, 155, 38, 0.25);
-  color: #f3be58;
-  border-color: rgba(217, 155, 38, 0.5);
+  background: rgba(234, 179, 8, 0.2);
+  color: #facc15;
+  border-color: rgba(234, 179, 8, 0.4);
 }
 
 .hud-badge {
@@ -186,10 +211,10 @@ body.theme-rdr2 {
 }
 
 .tab-btn.active {
-  background: var(--rdr2-crimson);
-  color: var(--text-white);
-  border-color: var(--rdr2-crimson-bright);
-  box-shadow: 0 0 10px rgba(158, 14, 26, 0.4);
+  background: rgba(0, 240, 255, 0.15);
+  color: #38bdf8;
+  border-color: rgba(0, 240, 255, 0.4);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
 }
 
 .icon-btn {
@@ -200,7 +225,6 @@ body.theme-rdr2 {
   border-radius: 6px;
   font-size: 13px;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
 }
 
 .icon-btn:active {
@@ -210,7 +234,7 @@ body.theme-rdr2 {
 /* ==================== MAIN APP CONTAINER ==================== */
 #app-container {
   flex: 1;
-  height: calc(100% - 38px);
+  height: calc(100% - 40px);
   position: relative;
   overflow: hidden;
 }
@@ -237,24 +261,24 @@ body.theme-rdr2 {
   touch-action: none;
 }
 
-/* Forms & Cards */
+/* Cards & Forms */
 .card {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 14px;
   margin-bottom: 12px;
   max-width: 680px;
   margin-left: auto;
   margin-right: auto;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
 }
 
 .card h2, .card h3 {
   font-size: 15px;
   font-weight: 700;
   margin-bottom: 10px;
-  color: #ffcdd2;
+  color: var(--text-white);
 }
 
 .form-group {
@@ -273,7 +297,7 @@ body.theme-rdr2 {
   width: 100%;
   padding: 10px 12px;
   font-size: 14px;
-  background: rgba(8, 9, 12, 0.85);
+  background: rgba(10, 12, 17, 0.9);
   border: 1px solid var(--panel-border);
   color: var(--text-white);
   border-radius: 6px;
@@ -283,8 +307,8 @@ body.theme-rdr2 {
 }
 
 .form-group input:focus {
-  border-color: var(--rdr2-crimson);
-  box-shadow: 0 0 0 2px rgba(158, 14, 26, 0.35);
+  border-color: var(--ps-cyan);
+  box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.3);
 }
 
 .form-group small {
@@ -311,14 +335,14 @@ body.theme-rdr2 {
   transition: all 0.15s ease;
 }
 
-.btn-crimson {
-  background: linear-gradient(180deg, var(--rdr2-crimson-bright), var(--rdr2-crimson));
+.btn-primary {
+  background: #0284c7;
   color: #ffffff;
-  box-shadow: 0 2px 10px rgba(158, 14, 26, 0.4);
+  box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
 }
 
-.btn-crimson:hover:not(:disabled) {
-  background: var(--rdr2-crimson-bright);
+.btn-primary:hover:not(:disabled) {
+  background: #0369a1;
 }
 
 .btn-gray {
@@ -357,18 +381,18 @@ body.theme-rdr2 {
 .alert-box {
   margin-top: 10px;
   padding: 8px 12px;
-  background: rgba(158, 14, 26, 0.2);
-  border: 1px solid rgba(158, 14, 26, 0.4);
-  color: #ff8b94;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
   font-size: 11px;
   border-radius: 6px;
   line-height: 1.4;
 }
 
 /* ==========================================================================
-   SCREEN B: RDR2 FULLSCREEN CANVAS LAYOUT (MIRRORING & IMPROVING REFERENCE)
+   PS5 DUALSENSE HIGH-STICK LAYOUT ARCHITECTURE
    ========================================================================== */
-.rdr2-canvas {
+.controller-stage {
   width: 100%;
   height: 100%;
   display: grid;
@@ -376,228 +400,210 @@ body.theme-rdr2 {
   grid-template-areas: "left center right";
   align-items: center;
   box-sizing: border-box;
-  padding: 8px 14px calc(8px + var(--safe-bottom)) 14px;
-  background: radial-gradient(circle at 50% 50%, #15161d 0%, #0a0b0e 100%);
+  padding: 4px 10px calc(4px + var(--safe-bottom)) 10px;
+  background: radial-gradient(circle at 50% 50%, #151a28 0%, #07090e 100%);
   position: relative;
   overflow: hidden;
+  transition: all 0.25s ease-in-out;
 }
 
-/* --- Common Crimson Button Styling --- */
+.pod-group {
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+}
+
+.group-left {
+  grid-area: left;
+}
+
+.group-center {
+  grid-area: center;
+}
+
+.group-right {
+  grid-area: right;
+}
+
+/* -------------------------------------------------------------
+   PS5 HIGH-STICK GRID (LEFT & RIGHT PODS)
+   Left Wing: L1/L2 Triggers Top, Left Stick HIGH, D-Pad LOW
+   Right Wing: R1/R2 Triggers Top, Right Stick HIGH, Actions LOW
+   ------------------------------------------------------------- */
+.layout-ps5 .group-left {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "triggers triggers"
+    "stick dpad";
+  gap: 4px 10px;
+  align-items: center;
+}
+
+.layout-ps5 .left-triggers {
+  grid-area: triggers;
+  justify-content: flex-start;
+}
+
+/* LEFT STICK ELEVATED TO HIGH POSITION */
+.layout-ps5 .left-stick-pod {
+  grid-area: stick;
+  align-self: start;
+  margin-top: 2px;
+}
+
+/* D-PAD POSITIONED BELOW/INWARD */
+.layout-ps5 .dpad-pod {
+  grid-area: dpad;
+  align-self: center;
+}
+
+.layout-ps5 .group-right {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "triggers triggers"
+    "face stick";
+  gap: 4px 10px;
+  align-items: center;
+}
+
+.layout-ps5 .right-triggers {
+  grid-area: triggers;
+  justify-content: flex-end;
+}
+
+/* RIGHT STICK ELEVATED TO HIGH POSITION */
+.layout-ps5 .right-stick-pod {
+  grid-area: stick;
+  align-self: start;
+  margin-top: 2px;
+}
+
+/* ACTION BUTTONS POSITIONED BELOW/INWARD */
+.layout-ps5 .face-pod {
+  grid-area: face;
+  align-self: center;
+}
+
+/* ==================== BUTTON BASE STYLES & HAPTICS ==================== */
 .gamepad-btn,
 .gamepad-trigger-tap,
 .gamepad-dpad-btn {
   touch-action: none;
   cursor: pointer;
-  background: linear-gradient(145deg, #b81423 0%, #820712 100%);
+  background: var(--btn-bg);
   color: var(--text-white);
-  border: 2px solid rgba(255, 255, 255, 0.22);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+  border: 2px solid var(--btn-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   opacity: var(--ui-opacity);
-  transition: transform 0.05s ease, box-shadow 0.08s ease, background 0.08s ease;
+  transition: transform 0.05s ease, box-shadow 0.08s ease, background 0.08s ease, border-color 0.08s ease;
   line-height: 1;
 }
 
-/* Tactile Pressed / Active State with Glowing Ember Pulse */
+/* DualSense Cyan Active Glow on Press */
 .gamepad-btn:active, .gamepad-btn.pressed,
 .gamepad-trigger-tap:active, .gamepad-trigger-tap.pressed,
 .gamepad-dpad-btn:active, .gamepad-dpad-btn.pressed {
   transform: scale(0.92);
-  background: linear-gradient(145deg, #d41c2c 0%, #a30a16 100%);
-  border-color: #ff9da6;
-  box-shadow: 0 0 20px rgba(240, 30, 45, 0.85), inset 0 2px 6px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(145deg, #0284c7 0%, #0369a1 100%);
+  box-shadow: 0 0 20px var(--ps-cyan-glow), inset 0 2px 6px rgba(0, 0, 0, 0.8);
+  border-color: var(--ps-cyan);
 }
 
 .btn-glyph {
-  font-size: calc(15px * var(--ui-scale));
+  font-size: calc(14px * var(--ui-scale));
   font-weight: 900;
   letter-spacing: 0.5px;
 }
 
-.btn-sub {
-  font-size: calc(7.5px * var(--ui-scale));
-  font-weight: 600;
-  color: var(--text-cream);
-  opacity: 0.85;
-  margin-top: 2px;
-  text-transform: capitalize;
-}
-
-/* ==================== LEFT THUMB ZONE ==================== */
-.zone-left {
-  grid-area: left;
-  height: 100%;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto 1fr;
-  grid-template-areas:
-    "triggers triggers"
-    "dpad stick";
-  gap: 8px 14px;
-  align-items: center;
-}
-
-/* Left Trigger & Bumper */
-.left-triggers {
-  grid-area: triggers;
+/* Triggers (L2 & R2) and Bumpers (L1 & R1) */
+.trigger-pod {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
-.circle-trigger {
+.trigger-btn {
   width: calc(64px * var(--ui-scale));
-  height: calc(64px * var(--ui-scale));
-  border-radius: 50%;
+  height: calc(42px * var(--ui-scale));
+  border-radius: 12px;
+  background: linear-gradient(180deg, #2b3244, #181c28);
+  border-color: rgba(0, 240, 255, 0.35);
+  color: #38bdf8;
 }
 
-.circle-bumper {
-  width: calc(52px * var(--ui-scale));
-  height: calc(52px * var(--ui-scale));
-  border-radius: 50%;
+.bumper-btn {
+  width: calc(64px * var(--ui-scale));
+  height: calc(42px * var(--ui-scale));
+  border-radius: 12px;
+  background: linear-gradient(180deg, #242938, #141722);
 }
 
 .trigger-slider-dock {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgba(18, 20, 26, 0.65);
+  background: rgba(18, 22, 33, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  padding: 3px 8px;
-  width: 90px;
+  padding: 2px 6px;
+  width: 76px;
 }
 
 .trigger-slider-dock input[type="range"] {
   width: 100%;
   height: 16px;
   margin: 0;
-  accent-color: var(--rdr2-crimson-bright);
+  accent-color: var(--ps-cyan);
   touch-action: none;
-  cursor: pointer;
 }
 
 .trigger-val {
   font-size: 8.5px;
   font-family: monospace;
-  color: var(--text-muted);
+  color: var(--text-dim);
 }
 
-/* 4-Way D-Pad Circular Disc */
-.dpad-disc {
-  grid-area: dpad;
-  width: calc(130px * var(--ui-scale));
-  height: calc(130px * var(--ui-scale));
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, #20242e 20%, #12141a 100%);
-  border: 3px solid rgba(158, 14, 26, 0.6);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), inset 0 2px 8px rgba(0, 0, 0, 0.6);
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: var(--ui-opacity);
+body.hide-slider-docks .trigger-slider-dock {
+  display: none !important;
 }
 
-.dpad-slice {
-  position: absolute;
-  background: linear-gradient(145deg, #a8101e 0%, #75050f 100%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  z-index: 2;
-}
-
-.dpad-up {
-  top: 4px;
-  width: calc(44px * var(--ui-scale));
-  height: calc(42px * var(--ui-scale));
-  border-radius: 12px 12px 4px 4px;
-}
-
-.dpad-down {
-  bottom: 4px;
-  width: calc(44px * var(--ui-scale));
-  height: calc(42px * var(--ui-scale));
-  border-radius: 4px 4px 12px 12px;
-}
-
-.dpad-left {
-  left: 4px;
-  width: calc(42px * var(--ui-scale));
-  height: calc(44px * var(--ui-scale));
-  border-radius: 12px 4px 4px 12px;
-}
-
-.dpad-right {
-  right: 4px;
-  width: calc(42px * var(--ui-scale));
-  height: calc(44px * var(--ui-scale));
-  border-radius: 4px 12px 12px 4px;
-}
-
-.dpad-center-hub {
-  width: calc(36px * var(--ui-scale));
-  height: calc(36px * var(--ui-scale));
-  background: #14161c;
-  border-radius: 50%;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.crest-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--rdr2-crimson);
-  box-shadow: 0 0 6px rgba(158, 14, 26, 0.8);
-}
-
-.arrow-glyph {
-  font-size: calc(14px * var(--ui-scale));
-  font-weight: 900;
-}
-
-.dpad-sub {
-  font-size: calc(6.5px * var(--ui-scale));
-  font-weight: 600;
-  color: var(--text-cream);
-  line-height: 1;
-  margin-top: 1px;
-}
-
-/* ==================== ANALOG JOYSTICKS (WITH BONE-WHITE KNOB) ==================== */
-.stick-pod {
+/* ==================== ENLARGED ANALOG JOYSTICKS ==================== */
+.analog-pod {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
 }
 
-.left-stick-pod {
-  grid-area: stick;
-}
-
-.right-stick-pod {
-  grid-area: stick;
-}
-
+/* Increased from 130px to 142px diameter for comfortable continuous thumb movement */
 .joystick-pad {
-  width: calc(134px * var(--ui-scale));
-  height: calc(134px * var(--ui-scale));
+  width: calc(142px * var(--ui-scale));
+  height: calc(142px * var(--ui-scale));
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, #1e0306 0%, #101116 80%);
-  border: 4px solid var(--rdr2-crimson);
-  box-shadow: inset 0 4px 14px rgba(0, 0, 0, 0.9), 0 4px 16px rgba(0, 0, 0, 0.7);
+  background: radial-gradient(circle at 50% 50%, #171d2b 30%, #0c0e16 100%);
+  border: 3px solid rgba(0, 240, 255, 0.4);
+  box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.9), 0 0 16px rgba(0, 240, 255, 0.15);
   position: relative;
   touch-action: none;
   opacity: var(--ui-opacity);
   cursor: pointer;
+}
+
+.joystick-cyan-halo {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  pointer-events: none;
 }
 
 .joystick-deadzone-guide {
@@ -608,18 +614,17 @@ body.theme-rdr2 {
   width: 24%;
   height: 24%;
   border-radius: 50%;
-  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border: 1px dashed rgba(0, 240, 255, 0.3);
   pointer-events: none;
 }
 
-/* Tactile Bone-White Thumbstick Knob (Directly Inspired by Reference) */
 .joystick-knob {
-  width: calc(56px * var(--ui-scale));
-  height: calc(56px * var(--ui-scale));
+  width: calc(60px * var(--ui-scale));
+  height: calc(60px * var(--ui-scale));
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 40%, #ffffff 0%, #ede1e1 60%, #c2b4b4 100%);
-  border: 2px solid #ffffff;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.9);
+  background: radial-gradient(circle at 40% 40%, #3d465c 0%, #1c202d 100%);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.4);
   position: absolute;
   top: 50%;
   left: 50%;
@@ -630,21 +635,20 @@ body.theme-rdr2 {
   justify-content: center;
 }
 
-.knob-grip-rings {
-  width: calc(34px * var(--ui-scale));
-  height: calc(34px * var(--ui-scale));
+.knob-cap {
+  width: calc(40px * var(--ui-scale));
+  height: calc(40px * var(--ui-scale));
   border-radius: 50%;
-  border: 2px dashed rgba(120, 110, 110, 0.45);
-  pointer-events: none;
+  border: 1px dashed rgba(0, 240, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.knob-center-dimple {
-  width: calc(12px * var(--ui-scale));
-  height: calc(12px * var(--ui-scale));
-  border-radius: 50%;
-  background: rgba(160, 150, 150, 0.35);
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
-  position: absolute;
+.knob-label {
+  font-size: calc(10px * var(--ui-scale));
+  font-weight: 800;
+  color: #7dd3fc;
 }
 
 .stick-telemetry {
@@ -663,146 +667,248 @@ body.theme-rdr2 {
   font-weight: 600;
 }
 
-/* ==================== CENTER HUB & STICK CLICKS ==================== */
-.zone-center {
-  grid-area: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-  padding: 4px 6px;
-  z-index: 10;
-}
-
-.center-top-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.center-circle-btn {
-  width: calc(48px * var(--ui-scale));
-  height: calc(48px * var(--ui-scale));
-  border-radius: 50%;
-}
-
-.symbol-glyph {
-  font-size: calc(16px * var(--ui-scale));
-  font-weight: 900;
-}
-
-.emergency-core {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.btn-emergency {
-  width: calc(54px * var(--ui-scale));
-  height: calc(54px * var(--ui-scale));
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 40%, #ff2a3a 0%, #b80512 80%);
-  border: 2px solid #ff7b84;
-  color: #ffffff;
-  box-shadow: 0 0 14px rgba(255, 30, 45, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.5);
-  cursor: pointer;
+/* ==================== D-PAD CROSS ==================== */
+.dpad-pod {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  touch-action: none;
-  transition: transform 0.08s, box-shadow 0.1s;
 }
 
-.btn-emergency:active {
-  transform: scale(0.92);
-  background: #94030d;
-}
-
-.emergency-txt {
-  font-size: calc(7px * var(--ui-scale));
-  font-weight: 900;
-  letter-spacing: 0.4px;
-}
-
-.neutral-badge {
-  font-size: 7.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  letter-spacing: 0.5px;
-}
-
-/* Center Lower Row (Mirroring Left Stick & Right Stick Buttons in Reference) */
-.center-bottom-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 4px;
-}
-
-.stick-pill-btn {
-  min-width: calc(70px * var(--ui-scale));
-  height: calc(44px * var(--ui-scale));
-  border-radius: 999px;
-  padding: 4px 8px;
-}
-
-.pill-main {
-  font-size: calc(10px * var(--ui-scale));
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-/* ==================== RIGHT THUMB ZONE ==================== */
-.zone-right {
-  grid-area: right;
-  height: 100%;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: auto 1fr;
-  grid-template-areas:
-    "triggers triggers"
-    "stick face";
-  gap: 8px 14px;
-  align-items: center;
-}
-
-/* Right Trigger & Bumper */
-.right-triggers {
-  grid-area: triggers;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-}
-
-/* Action Buttons Diamond (Y, X, B, A) */
-.face-diamond {
-  grid-area: face;
+.dpad-cross {
   display: flex;
   flex-direction: column;
   align-items: center;
   opacity: var(--ui-opacity);
 }
 
-.face-horizontal-row {
+.dpad-middle-row {
+  display: flex;
+  align-items: center;
+}
+
+.dpad-arrow {
+  width: calc(44px * var(--ui-scale));
+  height: calc(44px * var(--ui-scale));
+  font-size: calc(14px * var(--ui-scale));
+  font-weight: 900;
+  background: linear-gradient(145deg, #242938, #161822);
+}
+
+.dpad-up {
+  border-radius: 12px 12px 0 0;
+  border-bottom: none;
+}
+
+.dpad-down {
+  border-radius: 0 0 12px 12px;
+  border-top: none;
+}
+
+.dpad-left {
+  border-radius: 12px 0 0 12px;
+  border-right: none;
+}
+
+.dpad-right {
+  border-radius: 0 12px 12px 0;
+  border-left: none;
+}
+
+.dpad-center-hub {
+  width: calc(38px * var(--ui-scale));
+  height: calc(38px * var(--ui-scale));
+  background: #11141c;
+}
+
+/* ==================== PLAYSTATION GEOMETRIC FACE BUTTONS ==================== */
+.face-pod {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.face-diamond {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: var(--ui-opacity);
+}
+
+.face-middle-row {
   display: flex;
   gap: calc(26px * var(--ui-scale));
   margin: calc(4px * var(--ui-scale)) 0;
 }
 
-.circle-face-btn {
-  width: calc(50px * var(--ui-scale));
-  height: calc(50px * var(--ui-scale));
+.face-btn {
+  width: calc(52px * var(--ui-scale));
+  height: calc(52px * var(--ui-scale));
   border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.25);
 }
 
 .face-letter {
-  font-size: calc(16px * var(--ui-scale));
+  font-size: calc(20px * var(--ui-scale));
   font-weight: 900;
+}
+
+/* Iconic PlayStation Button Colors */
+.ps5-triangle {
+  border-color: var(--color-triangle);
+  color: #34d399;
+}
+.ps5-triangle:active, .ps5-triangle.pressed {
+  background: var(--color-triangle);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+  color: #ffffff;
+}
+
+.ps5-square {
+  border-color: var(--color-square);
+  color: #f472b6;
+}
+.ps5-square:active, .ps5-square.pressed {
+  background: var(--color-square);
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.8);
+  color: #ffffff;
+}
+
+.ps5-circle {
+  border-color: var(--color-circle);
+  color: #f87171;
+}
+.ps5-circle:active, .ps5-circle.pressed {
+  background: var(--color-circle);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+  color: #ffffff;
+}
+
+.ps5-cross {
+  border-color: var(--color-cross);
+  color: #60a5fa;
+}
+.ps5-cross:active, .ps5-cross.pressed {
+  background: var(--color-cross);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+  color: #ffffff;
+}
+
+/* ==================== CENTER TOUCHPAD & SYSTEM CLUSTER ==================== */
+.group-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 4px 8px;
+  z-index: 10;
+}
+
+.center-top-cluster {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.center-btn {
+  width: calc(52px * var(--ui-scale));
+  height: calc(38px * var(--ui-scale));
+  border-radius: 10px;
+  background: linear-gradient(180deg, #242938, #141722);
+}
+
+.glyph-center {
+  font-size: calc(13px * var(--ui-scale));
+  font-weight: 900;
+}
+
+.sub-center {
+  font-size: calc(6.5px * var(--ui-scale));
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-top: 1px;
+}
+
+/* PS5 Touchpad Card with Glowing Lightbar */
+.ps5-touchpad-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(18, 22, 33, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 4px 10px;
+  width: calc(120px * var(--ui-scale));
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.touchpad-lightbar {
+  width: 70%;
+  height: 2px;
+  background: var(--ps-cyan);
+  box-shadow: 0 0 8px var(--ps-cyan);
+  border-radius: 2px;
+  margin-bottom: 3px;
+}
+
+.ps5-touch-btn {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 0;
+  touch-action: none;
+}
+
+.ps5-touch-btn:active {
+  transform: scale(0.94);
+}
+
+.glyph-touchpad {
+  font-size: calc(8px * var(--ui-scale));
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #7dd3fc;
+}
+
+.txt-emergency {
+  font-size: calc(10px * var(--ui-scale));
+  font-weight: 900;
+  color: #f87171;
+}
+
+.badge-neutral {
+  font-size: 7.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-top: 1px;
+}
+
+.center-stick-clicks {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.click-btn {
+  width: calc(68px * var(--ui-scale));
+  height: calc(34px * var(--ui-scale));
+  border-radius: 999px;
+  background: linear-gradient(180deg, #242938, #141722);
+}
+
+.click-glyph {
+  font-size: calc(9.5px * var(--ui-scale));
+  font-weight: 800;
+  color: #94a3b8;
 }
 
 /* ==================== SETTINGS MODAL / DRAWER ==================== */
@@ -824,7 +930,7 @@ body.theme-rdr2 {
 }
 
 .settings-dialog {
-  background: #14161d;
+  background: #141824;
   border: 1px solid var(--panel-border);
   border-radius: 14px;
   width: 100%;
@@ -842,13 +948,12 @@ body.theme-rdr2 {
   justify-content: space-between;
   padding: 12px 16px;
   border-bottom: 1px solid var(--panel-border);
-  background: rgba(255, 255, 255, 0.02);
 }
 
 .settings-header h3 {
   font-size: 15px;
   font-weight: 700;
-  color: #ffcdd2;
+  color: var(--text-white);
 }
 
 .close-btn {
@@ -880,13 +985,13 @@ body.theme-rdr2 {
 }
 
 .setting-item label span {
-  color: var(--rdr2-crimson-bright);
+  color: var(--ps-cyan);
   font-family: monospace;
 }
 
 .setting-item input[type="range"] {
   width: 100%;
-  accent-color: var(--rdr2-crimson-bright);
+  accent-color: var(--ps-cyan);
   cursor: pointer;
 }
 
@@ -908,12 +1013,12 @@ body.theme-rdr2 {
 .toggle-label input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: var(--rdr2-crimson-bright);
+  accent-color: var(--ps-cyan);
   cursor: pointer;
 }
 
 .mapping-note {
-  background: rgba(8, 9, 12, 0.7);
+  background: rgba(10, 13, 20, 0.7);
   border: 1px solid var(--panel-border);
   border-radius: 8px;
   padding: 8px 12px;
@@ -922,7 +1027,7 @@ body.theme-rdr2 {
 
 .mapping-note summary {
   cursor: pointer;
-  color: var(--rdr2-amber);
+  color: #38bdf8;
   font-weight: 700;
   outline: none;
   margin-bottom: 4px;
@@ -945,29 +1050,11 @@ body.theme-rdr2 {
   color: var(--text-white);
 }
 
-.mapping-note small {
-  display: block;
-  margin-top: 6px;
-  color: var(--text-dim);
-  font-style: italic;
-}
-
 .settings-footer {
   padding: 10px 16px;
   border-top: 1px solid var(--panel-border);
-  background: rgba(255, 255, 255, 0.02);
   display: flex;
   justify-content: flex-end;
-}
-
-/* ==================== USER CUSTOMIZATION TOGGLES ==================== */
-body.hide-sublabels .btn-sub,
-body.hide-sublabels .dpad-sub {
-  display: none !important;
-}
-
-body.hide-slider-docks .trigger-slider-dock {
-  display: none !important;
 }
 
 /* Diagnostics Test Buttons */
@@ -994,9 +1081,8 @@ body.hide-slider-docks .trigger-slider-dock {
   font-size: 11px;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.1s ease;
 }
 
 .test-pulse-btn:active {
-  background: var(--rdr2-crimson-bright);
+  background: #0284c7;
 }

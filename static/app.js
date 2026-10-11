@@ -1,8 +1,8 @@
 /**
- * RDR2 Mobile Controller — Frontier Link Client Logic
+ * Universal PC Gamepad — Frontier Link Client Logic
  * Multi-touch Pointer-based controller interface with WebSocket streaming,
  * authoritative complete-state messaging, latency measurement, diagnostics,
- * user comfort settings, haptic touch feedback, and zero-stuck-control safety.
+ * 5 dynamic layout presets (Xbox, PS5, Switch, Claw, Steam Deck), and failsafe safety.
  */
 
 (function () {
@@ -13,6 +13,7 @@
   const DEFAULT_SENSITIVITY = 1.0;     // 1.0x default sensitivity
   const DEFAULT_SCALE = 100;           // 100% default scale
   const DEFAULT_OPACITY = 95;          // 95% default opacity
+  const DEFAULT_LAYOUT = "ps5";        // Default: PS5 DualSense High-Stick
   const PING_INTERVAL_MS = 1000;
   const INPUT_THROTTLE_MS = 16;        // ~60 Hz max transmission rate
 
@@ -21,8 +22,8 @@
   let activeSensitivity = DEFAULT_SENSITIVITY;
   let activeScale = DEFAULT_SCALE;
   let activeOpacity = DEFAULT_OPACITY;
+  let activeLayout = DEFAULT_LAYOUT;
   let hapticEnabled = true;
-  let sublabelsEnabled = true;
   let sliderDocksEnabled = true;
 
   // --- State Variables ---
@@ -56,6 +57,19 @@
   const btnConnect = document.getElementById("btn-connect");
   const btnDisconnect = document.getElementById("btn-disconnect");
   const btnFullscreen = document.getElementById("btn-fullscreen");
+  const layoutPicker = document.getElementById("layout-picker");
+  const settingLayoutDrawer = document.getElementById("setting-layout-drawer");
+  const controllerStage = document.getElementById("controller-stage");
+
+  // Dynamic Button Labels
+  const labelBtnY = document.getElementById("label-btn-y");
+  const labelBtnX = document.getElementById("label-btn-x");
+  const labelBtnB = document.getElementById("label-btn-b");
+  const labelBtnA = document.getElementById("label-btn-a");
+  const labelLt = document.getElementById("label-lt");
+  const labelRt = document.getElementById("label-rt");
+  const labelLb = document.getElementById("label-lb");
+  const labelRb = document.getElementById("label-rb");
 
   const statusWs = document.getElementById("status-ws");
   const statusAuth = document.getElementById("status-auth");
@@ -86,7 +100,6 @@
   const settingDeadzoneSlider = document.getElementById("setting-deadzone");
   const settingSensitivitySlider = document.getElementById("setting-sensitivity");
   const settingHapticCheck = document.getElementById("setting-haptic");
-  const settingSublabelsCheck = document.getElementById("setting-sublabels");
   const settingSliderDocksCheck = document.getElementById("setting-slider-docks");
   const valSettingScale = document.getElementById("val-setting-scale");
   const valSettingOpacity = document.getElementById("val-setting-opacity");
@@ -147,14 +160,68 @@
     });
   }
 
+  // --- Dynamic Layout Switching Architecture ---
+  function applyLayout(layoutKey) {
+    if (!controllerStage) return;
+    activeLayout = layoutKey;
+    controllerStage.className = `controller-stage layout-${layoutKey}`;
+
+    if (layoutPicker) layoutPicker.value = layoutKey;
+    if (settingLayoutDrawer) settingLayoutDrawer.value = layoutKey;
+
+    // Adapt button face glyphs to matching platform conventions
+    if (layoutKey === "ps5") {
+      if (labelBtnY) labelBtnY.textContent = "△";
+      if (labelBtnX) labelBtnX.textContent = "□";
+      if (labelBtnB) labelBtnB.textContent = "◯";
+      if (labelBtnA) labelBtnA.textContent = "✕";
+      if (labelLt) labelLt.textContent = "L2";
+      if (labelRt) labelRt.textContent = "R2";
+      if (labelLb) labelLb.textContent = "L1";
+      if (labelRb) labelRb.textContent = "R1";
+    } else if (layoutKey === "switch") {
+      if (labelBtnY) labelBtnY.textContent = "X";
+      if (labelBtnX) labelBtnX.textContent = "Y";
+      if (labelBtnB) labelBtnB.textContent = "A";
+      if (labelBtnA) labelBtnA.textContent = "B";
+      if (labelLt) labelLt.textContent = "ZL";
+      if (labelRt) labelRt.textContent = "ZR";
+      if (labelLb) labelLb.textContent = "L";
+      if (labelRb) labelRb.textContent = "R";
+    } else {
+      // Standard Xbox, Mobile Claw, and Steam Deck labels
+      if (labelBtnY) labelBtnY.textContent = "Y";
+      if (labelBtnX) labelBtnX.textContent = "X";
+      if (labelBtnB) labelBtnB.textContent = "B";
+      if (labelBtnA) labelBtnA.textContent = "A";
+      if (labelLt) labelLt.textContent = "LT";
+      if (labelRt) labelRt.textContent = "RT";
+      if (labelLb) labelLb.textContent = "LB";
+      if (labelRb) labelRb.textContent = "RB";
+    }
+
+    saveSettings();
+  }
+
+  if (layoutPicker) {
+    layoutPicker.addEventListener("change", e => {
+      applyLayout(e.target.value);
+    });
+  }
+
+  if (settingLayoutDrawer) {
+    settingLayoutDrawer.addEventListener("change", e => {
+      applyLayout(e.target.value);
+    });
+  }
+
   // --- Settings Persistence & Loading ---
-  const PREFS_STORAGE_KEY = "rdr2_controller_prefs";
+  const PREFS_STORAGE_KEY = "universal_controller_prefs";
 
   function applySettingsToUI() {
     document.documentElement.style.setProperty("--ui-scale", (activeScale / 100).toString());
     document.documentElement.style.setProperty("--ui-opacity", (activeOpacity / 100).toString());
 
-    document.body.classList.toggle("hide-sublabels", !sublabelsEnabled);
     document.body.classList.toggle("hide-slider-docks", !sliderDocksEnabled);
 
     if (settingScaleSlider) settingScaleSlider.value = activeScale;
@@ -162,13 +229,14 @@
     if (settingDeadzoneSlider) settingDeadzoneSlider.value = Math.round(activeDeadzone * 100);
     if (settingSensitivitySlider) settingSensitivitySlider.value = Math.round(activeSensitivity * 100);
     if (settingHapticCheck) settingHapticCheck.checked = hapticEnabled;
-    if (settingSublabelsCheck) settingSublabelsCheck.checked = sublabelsEnabled;
     if (settingSliderDocksCheck) settingSliderDocksCheck.checked = sliderDocksEnabled;
 
     if (valSettingScale) valSettingScale.textContent = `${activeScale}%`;
     if (valSettingOpacity) valSettingOpacity.textContent = `${activeOpacity}%`;
     if (valSettingDeadzone) valSettingDeadzone.textContent = `${Math.round(activeDeadzone * 100)}%`;
     if (valSettingSensitivity) valSettingSensitivity.textContent = `${activeSensitivity.toFixed(1)}x`;
+
+    applyLayout(activeLayout);
   }
 
   function saveSettings() {
@@ -179,13 +247,11 @@
         deadzone: Math.round(activeDeadzone * 100),
         sensitivity: Math.round(activeSensitivity * 100),
         haptic: hapticEnabled,
-        sublabels: sublabelsEnabled,
-        sliderDocks: sliderDocksEnabled
+        sliderDocks: sliderDocksEnabled,
+        layout: activeLayout
       };
       localStorage.setItem(PREFS_STORAGE_KEY, JSON.stringify(prefs));
-    } catch (_) {
-      // LocalStorage may fail gracefully
-    }
+    } catch (_) {}
   }
 
   function loadSettings() {
@@ -208,11 +274,11 @@
         if (typeof prefs.haptic === "boolean") {
           hapticEnabled = prefs.haptic;
         }
-        if (typeof prefs.sublabels === "boolean") {
-          sublabelsEnabled = prefs.sublabels;
-        }
         if (typeof prefs.sliderDocks === "boolean") {
           sliderDocksEnabled = prefs.sliderDocks;
+        }
+        if (typeof prefs.layout === "string" && ["xbox", "ps5", "switch", "claw", "deck"].includes(prefs.layout)) {
+          activeLayout = prefs.layout;
         }
       }
     } catch (_) {
@@ -220,8 +286,8 @@
       activeOpacity = DEFAULT_OPACITY;
       activeDeadzone = DEFAULT_DEADZONE;
       activeSensitivity = DEFAULT_SENSITIVITY;
+      activeLayout = DEFAULT_LAYOUT;
       hapticEnabled = true;
-      sublabelsEnabled = true;
       sliderDocksEnabled = true;
     }
     applySettingsToUI();
@@ -292,14 +358,6 @@
     });
   }
 
-  if (settingSublabelsCheck) {
-    settingSublabelsCheck.addEventListener("change", (e) => {
-      sublabelsEnabled = e.target.checked;
-      applySettingsToUI();
-      saveSettings();
-    });
-  }
-
   if (settingSliderDocksCheck) {
     settingSliderDocksCheck.addEventListener("change", (e) => {
       sliderDocksEnabled = e.target.checked;
@@ -314,8 +372,8 @@
       activeOpacity = DEFAULT_OPACITY;
       activeDeadzone = DEFAULT_DEADZONE;
       activeSensitivity = DEFAULT_SENSITIVITY;
+      activeLayout = DEFAULT_LAYOUT;
       hapticEnabled = true;
-      sublabelsEnabled = true;
       sliderDocksEnabled = true;
       applySettingsToUI();
       saveSettings();
@@ -526,7 +584,7 @@
           lastRttMs = Math.round(performance.now() - msg.client_ts);
           if (hudLatency) {
             hudLatency.textContent = `${lastRttMs} ms`;
-            hudLatency.style.color = lastRttMs < 30 ? "#56d364" : (lastRttMs < 75 ? "#f3be58" : "#ff6b77");
+            hudLatency.style.color = lastRttMs < 30 ? "#4ade80" : (lastRttMs < 75 ? "#facc15" : "#f87171");
           }
         }
         break;
@@ -631,7 +689,7 @@
       lastInputSendTime = performance.now();
       const isActive = (heldButtons.size > 0 || heldDpad.size > 0 || axes.lx !== 0 || axes.ly !== 0 || axes.rx !== 0 || axes.ry !== 0 || triggers.lt !== 0 || triggers.rt !== 0);
       emergencyIndicator.textContent = isActive ? "Active" : "Neutral";
-      emergencyIndicator.style.color = isActive ? "#ff7b84" : "";
+      emergencyIndicator.style.color = isActive ? "#f87171" : "";
     } catch (err) {
       console.error("Failed to send input state:", err);
     }
@@ -764,7 +822,7 @@
     });
   }
 
-  // Quick Trigger Tap Buttons (Aim & Fire)
+  // Quick Trigger Tap Buttons (LT & RT)
   document.querySelectorAll(".gamepad-trigger-tap").forEach(btn => {
     const trig = btn.getAttribute("data-trigger");
     const targetVal = parseFloat(btn.getAttribute("data-value") || "1.0");
@@ -865,7 +923,6 @@
 
       // Normalized coordinates [-1.0, 1.0]
       let normX = dx / maxRadius;
-      // Invert Y so up is positive (matching standard game controllers)
       let normY = -(dy / maxRadius);
 
       // Deadzone clamping with user-customizable deadzone
@@ -874,7 +931,6 @@
         normX = 0.0;
         normY = 0.0;
       } else {
-        // Rescale smoothly outside deadzone with sensitivity factor
         const scale = (normMag - activeDeadzone) / (1.0 - activeDeadzone) / normMag;
         normX = Math.max(-1.0, Math.min(1.0, normX * scale * activeSensitivity));
         normY = Math.max(-1.0, Math.min(1.0, normY * scale * activeSensitivity));
