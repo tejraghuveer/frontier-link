@@ -12,6 +12,7 @@
   const DEFAULT_DEADZONE = 0.12;       // 12% default deadzone
   const DEFAULT_SENSITIVITY = 1.0;     // 1.0x default sensitivity
   const DEFAULT_SCALE = 100;           // 100% default scale
+  const DEFAULT_STICK_SIZE = 144;      // 144px default stick diameter
   const DEFAULT_OPACITY = 95;          // 95% default opacity
   const DEFAULT_LAYOUT = "ps5";        // Default: PS5 DualSense High-Stick
   const PING_INTERVAL_MS = 1000;
@@ -21,10 +22,11 @@
   let activeDeadzone = DEFAULT_DEADZONE;
   let activeSensitivity = DEFAULT_SENSITIVITY;
   let activeScale = DEFAULT_SCALE;
+  let activeStickSize = DEFAULT_STICK_SIZE;
   let activeOpacity = DEFAULT_OPACITY;
   let activeLayout = DEFAULT_LAYOUT;
   let hapticEnabled = true;
-  let sliderDocksEnabled = true;
+  let sliderDocksEnabled = false;
 
   // --- State Variables ---
   let socket = null;
@@ -96,12 +98,14 @@
   const btnResetSettings = document.getElementById("btn-reset-settings");
   const settingsModal = document.getElementById("settings-modal");
   const settingScaleSlider = document.getElementById("setting-ui-scale");
+  const settingStickSizeSlider = document.getElementById("setting-stick-size");
   const settingOpacitySlider = document.getElementById("setting-ui-opacity");
   const settingDeadzoneSlider = document.getElementById("setting-deadzone");
   const settingSensitivitySlider = document.getElementById("setting-sensitivity");
   const settingHapticCheck = document.getElementById("setting-haptic");
   const settingSliderDocksCheck = document.getElementById("setting-slider-docks");
   const valSettingScale = document.getElementById("val-setting-scale");
+  const valSettingStickSize = document.getElementById("val-setting-stick-size");
   const valSettingOpacity = document.getElementById("val-setting-opacity");
   const valSettingDeadzone = document.getElementById("val-setting-deadzone");
   const valSettingSensitivity = document.getElementById("val-setting-sensitivity");
@@ -220,11 +224,13 @@
 
   function applySettingsToUI() {
     document.documentElement.style.setProperty("--ui-scale", (activeScale / 100).toString());
+    document.documentElement.style.setProperty("--stick-size", `${activeStickSize}px`);
     document.documentElement.style.setProperty("--ui-opacity", (activeOpacity / 100).toString());
 
-    document.body.classList.toggle("hide-slider-docks", !sliderDocksEnabled);
+    document.body.classList.toggle("show-slider-docks", sliderDocksEnabled);
 
     if (settingScaleSlider) settingScaleSlider.value = activeScale;
+    if (settingStickSizeSlider) settingStickSizeSlider.value = activeStickSize;
     if (settingOpacitySlider) settingOpacitySlider.value = activeOpacity;
     if (settingDeadzoneSlider) settingDeadzoneSlider.value = Math.round(activeDeadzone * 100);
     if (settingSensitivitySlider) settingSensitivitySlider.value = Math.round(activeSensitivity * 100);
@@ -232,6 +238,7 @@
     if (settingSliderDocksCheck) settingSliderDocksCheck.checked = sliderDocksEnabled;
 
     if (valSettingScale) valSettingScale.textContent = `${activeScale}%`;
+    if (valSettingStickSize) valSettingStickSize.textContent = `${activeStickSize}px`;
     if (valSettingOpacity) valSettingOpacity.textContent = `${activeOpacity}%`;
     if (valSettingDeadzone) valSettingDeadzone.textContent = `${Math.round(activeDeadzone * 100)}%`;
     if (valSettingSensitivity) valSettingSensitivity.textContent = `${activeSensitivity.toFixed(1)}x`;
@@ -243,6 +250,7 @@
     try {
       const prefs = {
         scale: activeScale,
+        stickSize: activeStickSize,
         opacity: activeOpacity,
         deadzone: Math.round(activeDeadzone * 100),
         sensitivity: Math.round(activeSensitivity * 100),
@@ -261,6 +269,9 @@
         const prefs = JSON.parse(raw);
         if (typeof prefs.scale === "number" && prefs.scale >= 80 && prefs.scale <= 130) {
           activeScale = prefs.scale;
+        }
+        if (typeof prefs.stickSize === "number" && prefs.stickSize >= 115 && prefs.stickSize <= 165) {
+          activeStickSize = prefs.stickSize;
         }
         if (typeof prefs.opacity === "number" && prefs.opacity >= 50 && prefs.opacity <= 100) {
           activeOpacity = prefs.opacity;
@@ -283,12 +294,13 @@
       }
     } catch (_) {
       activeScale = DEFAULT_SCALE;
+      activeStickSize = DEFAULT_STICK_SIZE;
       activeOpacity = DEFAULT_OPACITY;
       activeDeadzone = DEFAULT_DEADZONE;
       activeSensitivity = DEFAULT_SENSITIVITY;
       activeLayout = DEFAULT_LAYOUT;
       hapticEnabled = true;
-      sliderDocksEnabled = true;
+      sliderDocksEnabled = false;
     }
     applySettingsToUI();
   }
@@ -322,6 +334,14 @@
   if (settingScaleSlider) {
     settingScaleSlider.addEventListener("input", (e) => {
       activeScale = parseInt(e.target.value, 10);
+      applySettingsToUI();
+      saveSettings();
+    });
+  }
+
+  if (settingStickSizeSlider) {
+    settingStickSizeSlider.addEventListener("input", (e) => {
+      activeStickSize = parseInt(e.target.value, 10);
       applySettingsToUI();
       saveSettings();
     });
@@ -369,12 +389,13 @@
   if (btnResetSettings) {
     btnResetSettings.addEventListener("click", () => {
       activeScale = DEFAULT_SCALE;
+      activeStickSize = DEFAULT_STICK_SIZE;
       activeOpacity = DEFAULT_OPACITY;
       activeDeadzone = DEFAULT_DEADZONE;
       activeSensitivity = DEFAULT_SENSITIVITY;
       activeLayout = DEFAULT_LAYOUT;
       hapticEnabled = true;
-      sliderDocksEnabled = true;
+      sliderDocksEnabled = false;
       applySettingsToUI();
       saveSettings();
     });
@@ -712,6 +733,22 @@
     emergencyIndicator.style.color = "";
   }
 
+  function updateTriggerUI(trig, val) {
+    const clamped = Math.max(0.0, Math.min(1.0, val));
+    triggers[trig] = clamped;
+    const meter = document.getElementById(`meter-${trig}`);
+    if (meter) {
+      meter.style.height = `${(clamped * 100).toFixed(0)}%`;
+    }
+    if (trig === "lt") {
+      if (sliderLt) sliderLt.value = clamped;
+      if (valLt) valLt.textContent = clamped.toFixed(2);
+    } else if (trig === "rt") {
+      if (sliderRt) sliderRt.value = clamped;
+      if (valRt) valRt.textContent = clamped.toFixed(2);
+    }
+  }
+
   function resetAllInputControls() {
     heldButtons.clear();
     heldDpad.clear();
@@ -719,18 +756,15 @@
     axes.ly = 0.0;
     axes.rx = 0.0;
     axes.ry = 0.0;
-    triggers.lt = 0.0;
-    triggers.rt = 0.0;
+    updateTriggerUI("lt", 0.0);
+    updateTriggerUI("rt", 0.0);
 
     // Reset visual controls
     document.querySelectorAll(".gamepad-btn, .gamepad-dpad-btn, .gamepad-trigger-tap").forEach(el => {
       el.classList.remove("pressed");
     });
+    document.querySelectorAll(".joystick-pad").forEach(p => p.classList.remove("active"));
 
-    if (sliderLt) sliderLt.value = 0;
-    if (sliderRt) sliderRt.value = 0;
-    if (valLt) valLt.textContent = "0.00";
-    if (valRt) valRt.textContent = "0.00";
     if (valLx) valLx.textContent = "0.00";
     if (valLy) valLy.textContent = "0.00";
     if (valRx) valRx.textContent = "0.00";
@@ -808,51 +842,51 @@
   if (sliderLt) {
     sliderLt.addEventListener("input", e => {
       const v = parseFloat(e.target.value);
-      triggers.lt = Math.max(0.0, Math.min(1.0, v));
-      valLt.textContent = triggers.lt.toFixed(2);
+      updateTriggerUI("lt", v);
       scheduleInputSend();
     });
   }
   if (sliderRt) {
     sliderRt.addEventListener("input", e => {
       const v = parseFloat(e.target.value);
-      triggers.rt = Math.max(0.0, Math.min(1.0, v));
-      valRt.textContent = triggers.rt.toFixed(2);
+      updateTriggerUI("rt", v);
       scheduleInputSend();
     });
   }
 
-  // Quick Trigger Tap Buttons (LT & RT)
+  // Quick Trigger Tap & Drag Buttons (LT Aim & RT Fire)
   document.querySelectorAll(".gamepad-trigger-tap").forEach(btn => {
     const trig = btn.getAttribute("data-trigger");
+    if (!trig) return;
     const targetVal = parseFloat(btn.getAttribute("data-value") || "1.0");
+    let activePointerId = null;
 
     btn.addEventListener("pointerdown", e => {
+      if (activePointerId !== null) return;
+      activePointerId = e.pointerId;
       try { btn.setPointerCapture(e.pointerId); } catch (_) {}
       btn.classList.add("pressed");
-      triggers[trig] = targetVal;
+      updateTriggerUI(trig, targetVal);
       triggerHaptic(18);
-      if (trig === "lt") {
-        if (sliderLt) sliderLt.value = targetVal;
-        if (valLt) valLt.textContent = targetVal.toFixed(2);
-      } else {
-        if (sliderRt) sliderRt.value = targetVal;
-        if (valRt) valRt.textContent = targetVal.toFixed(2);
-      }
       scheduleInputSend();
     });
 
-    const release = e => {
-      try { btn.releasePointerCapture(e.pointerId); } catch (_) {}
-      btn.classList.remove("pressed");
-      triggers[trig] = 0.0;
-      if (trig === "lt") {
-        if (sliderLt) sliderLt.value = 0;
-        if (valLt) valLt.textContent = "0.00";
-      } else {
-        if (sliderRt) sliderRt.value = 0;
-        if (valRt) valRt.textContent = "0.00";
+    btn.addEventListener("pointermove", e => {
+      if (e.pointerId !== activePointerId) return;
+      const rect = btn.getBoundingClientRect();
+      if (rect.height > 0) {
+        const pull = Math.max(0.0, Math.min(1.0, (rect.bottom - e.clientY) / rect.height));
+        updateTriggerUI(trig, pull);
+        scheduleInputSend();
       }
+    });
+
+    const release = e => {
+      if (e.pointerId !== activePointerId && activePointerId !== null) return;
+      try { btn.releasePointerCapture(e.pointerId); } catch (_) {}
+      activePointerId = null;
+      btn.classList.remove("pressed");
+      updateTriggerUI(trig, 0.0);
       scheduleInputSend();
     };
 
@@ -873,6 +907,7 @@
       if (activePointerId !== null) return;
       activePointerId = e.pointerId;
       try { pad.setPointerCapture(e.pointerId); } catch (_) {}
+      pad.classList.add("active");
       triggerHaptic(8);
       updateJoystickPosition(e);
     });
@@ -886,6 +921,7 @@
       if (e.pointerId !== activePointerId && activePointerId !== null) return;
       try { pad.releasePointerCapture(e.pointerId); } catch (_) {}
       activePointerId = null;
+      pad.classList.remove("active");
 
       // Reset to center
       knob.style.left = "50%";
@@ -981,10 +1017,10 @@
       } else if (testType === "trigger") {
         const name = btn.getAttribute("data-name");
         const val = parseFloat(btn.getAttribute("data-val") || "1.0");
-        triggers[name] = val;
+        updateTriggerUI(name, val);
         sendInputStateImmediate();
         setTimeout(() => {
-          triggers[name] = 0.0;
+          updateTriggerUI(name, 0.0);
           sendInputStateImmediate();
         }, 150);
       } else if (testType === "axis") {

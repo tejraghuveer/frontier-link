@@ -1,46 +1,57 @@
 /* ==========================================================================
-   Universal PC Gamepad — PS5 DualSense High-Stick Edition
-   Sculpted two-tone glacier white & midnight onyx with cyan LED halo lighting.
+   Universal PC Gamepad — Frontier Edition
+   Premium Western & Console Tactical Handheld Stylesheet
+   Deep Charcoal, Brushed Steel, Antique Brass & Neon Accent Precision.
    ========================================================================== */
 
 :root {
   --ui-scale: 1;
+  --stick-size: 144px;
   --ui-opacity: 0.95;
 
-  /* PS5 DualSense Aesthetic Tokens */
-  --bg-deep: #07080d;
-  --bg-canvas: #0e111a;
-  --panel-bg: rgba(18, 22, 33, 0.92);
-  --panel-border: rgba(255, 255, 255, 0.12);
+  /* Western Tactical Palette */
+  --bg-deep: #07080b;
+  --bg-canvas: #0e1015;
+  --panel-bg: rgba(16, 19, 25, 0.94);
+  --panel-border: rgba(255, 255, 255, 0.09);
 
-  --ps-cyan: #00f0ff;
-  --ps-cyan-glow: rgba(0, 240, 255, 0.6);
-  --ps-blue: #3b82f6;
+  /* Metallic & Accent Tones */
+  --steel-light: #444c5c;
+  --steel-base: #242934;
+  --steel-dark: #14171e;
 
-  /* PlayStation Iconic Geometric Colors */
+  --brass-bright: #d4a743;
+  --brass-antique: #a27a29;
+  --brass-shadow: #5a4214;
+  --brass-rim: rgba(212, 167, 67, 0.45);
+
+  --accent-cyan: #00f0ff;
+  --accent-cyan-glow: rgba(0, 240, 255, 0.65);
+
+  --accent-fire: #ff5722;
+  --accent-fire-glow: rgba(255, 87, 34, 0.7);
+
+  --accent-emergency: #ef4444;
+
+  /* PlayStation Iconic Action Colors */
   --color-triangle: #10b981;  /* Emerald Green */
   --color-square: #ec4899;    /* Hot Pink */
-  --color-circle: #ef4444;    /* Coral Red */
-  --color-cross: #3b82f6;     /* PlayStation Blue */
+  --color-circle: #ef4444;    /* Crimson Red */
+  --color-cross: #38bdf8;     /* Sky/PlayStation Blue */
 
   --text-white: #ffffff;
-  --text-cream: #f1f5f9;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-cream: #ede8dc;
+  --text-muted: #9ba3b2;
+  --text-dim: #5e6676;
 
-  /* DualSense Two-Tone Button Finishes */
-  --btn-bg: linear-gradient(145deg, #242938 0%, #151824 100%);
-  --btn-border: rgba(255, 255, 255, 0.18);
-  --btn-active-bg: linear-gradient(145deg, #0284c7 0%, #0369a1 100%);
-
-  /* Safe Area Insets */
+  /* Safe Area Insets for Modern Edge-to-Edge Mobile Displays */
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Global Reset */
+/* Base Reset */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -60,7 +71,7 @@ html, body {
   position: fixed;
 }
 
-body.theme-ps5 {
+body.theme-frontier {
   display: flex;
   flex-direction: column;
   padding-left: var(--safe-left);
@@ -70,9 +81,9 @@ body.theme-ps5 {
 /* ==================== PORTRAIT ROTATION HINT ==================== */
 .rotation-hint {
   display: none;
-  background: linear-gradient(90deg, #0c1222, #16203a, #0c1222);
-  color: #bae6fd;
-  border-bottom: 2px solid var(--ps-cyan);
+  background: linear-gradient(90deg, #12151c, #1f2530, #12151c);
+  color: var(--text-cream);
+  border-bottom: 2px solid var(--brass-bright);
   padding: 8px 14px;
   font-size: 12px;
   align-items: center;
@@ -80,7 +91,7 @@ body.theme-ps5 {
   gap: 12px;
   z-index: 1000;
   text-align: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.85);
 }
 
 .rotation-hint .hint-icon {
@@ -95,7 +106,7 @@ body.theme-ps5 {
 }
 
 .rotation-hint strong {
-  color: #ffffff;
+  color: var(--brass-bright);
   font-size: 13px;
 }
 
@@ -112,46 +123,28 @@ body.theme-ps5 {
 
 /* ==================== TOP NAVIGATION BAR ==================== */
 .hud-nav {
-  height: 40px;
-  min-height: 40px;
+  height: 38px;
+  min-height: 38px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(14, 17, 26, 0.95);
+  background: rgba(12, 14, 18, 0.96);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding: 0 10px;
   gap: 8px;
   z-index: 100;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-.nav-left, .nav-right, .nav-center {
+.nav-left, .nav-right {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.layout-select {
-  background: rgba(22, 28, 42, 0.95);
-  color: #38bdf8;
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 11.5px;
-  font-weight: 700;
-  cursor: pointer;
-  outline: none;
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
-}
-
-.layout-select:focus {
-  border-color: #00f0ff;
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
-}
-
 .pill {
-  font-size: 9.5px;
+  font-size: 9px;
   font-weight: 800;
   padding: 3px 8px;
   border-radius: 999px;
@@ -167,15 +160,15 @@ body.theme-ps5 {
 }
 
 .status-connected {
-  background: rgba(34, 197, 94, 0.2);
-  color: #4ade80;
-  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.4);
 }
 
 .status-connecting {
-  background: rgba(234, 179, 8, 0.2);
-  color: #facc15;
-  border-color: rgba(234, 179, 8, 0.4);
+  background: rgba(212, 167, 67, 0.2);
+  color: #fcd34d;
+  border-color: rgba(212, 167, 67, 0.4);
 }
 
 .hud-badge {
@@ -199,7 +192,7 @@ body.theme-ps5 {
   border: 1px solid transparent;
   padding: 4px 10px;
   border-radius: 6px;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -211,10 +204,10 @@ body.theme-ps5 {
 }
 
 .tab-btn.active {
-  background: rgba(0, 240, 255, 0.15);
-  color: #38bdf8;
-  border-color: rgba(0, 240, 255, 0.4);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+  background: rgba(212, 167, 67, 0.16);
+  color: var(--brass-bright);
+  border-color: var(--brass-rim);
+  box-shadow: 0 0 10px rgba(212, 167, 67, 0.2);
 }
 
 .icon-btn {
@@ -234,7 +227,7 @@ body.theme-ps5 {
 /* ==================== MAIN APP CONTAINER ==================== */
 #app-container {
   flex: 1;
-  height: calc(100% - 40px);
+  height: calc(100% - 38px);
   position: relative;
   overflow: hidden;
 }
@@ -261,7 +254,7 @@ body.theme-ps5 {
   touch-action: none;
 }
 
-/* Cards & Forms */
+/* Cards & Forms (Screens A & C) */
 .card {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
@@ -278,7 +271,7 @@ body.theme-ps5 {
   font-size: 15px;
   font-weight: 700;
   margin-bottom: 10px;
-  color: var(--text-white);
+  color: var(--brass-bright);
 }
 
 .form-group {
@@ -307,8 +300,8 @@ body.theme-ps5 {
 }
 
 .form-group input:focus {
-  border-color: var(--ps-cyan);
-  box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.3);
+  border-color: var(--brass-bright);
+  box-shadow: 0 0 0 2px rgba(212, 167, 67, 0.3);
 }
 
 .form-group small {
@@ -336,13 +329,13 @@ body.theme-ps5 {
 }
 
 .btn-primary {
-  background: #0284c7;
-  color: #ffffff;
-  box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
+  background: linear-gradient(180deg, var(--brass-bright), var(--brass-antique));
+  color: #121008;
+  box-shadow: 0 2px 10px rgba(212, 167, 67, 0.35);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #0369a1;
+  filter: brightness(1.1);
 }
 
 .btn-gray {
@@ -390,7 +383,7 @@ body.theme-ps5 {
 }
 
 /* ==========================================================================
-   PS5 DUALSENSE HIGH-STICK LAYOUT ARCHITECTURE
+   FRONTIER CONTROLLER STAGE & ERGONOMIC 3-ZONE LAYOUT
    ========================================================================== */
 .controller-stage {
   width: 100%;
@@ -401,91 +394,38 @@ body.theme-ps5 {
   align-items: center;
   box-sizing: border-box;
   padding: 4px 10px calc(4px + var(--safe-bottom)) 10px;
-  background: radial-gradient(circle at 50% 50%, #151a28 0%, #07090e 100%);
+  background: radial-gradient(circle at 50% 50%, #151821 0%, #090a0d 100%);
   position: relative;
   overflow: hidden;
-  transition: all 0.25s ease-in-out;
 }
 
-.pod-group {
+.wing-pod {
   height: 100%;
   box-sizing: border-box;
   display: flex;
 }
 
-.group-left {
+.wing-left {
   grid-area: left;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2px 4px;
 }
 
-.group-center {
+.wing-center {
   grid-area: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  z-index: 10;
 }
 
-.group-right {
+.wing-right {
   grid-area: right;
-}
-
-/* -------------------------------------------------------------
-   PS5 HIGH-STICK GRID (LEFT & RIGHT PODS)
-   Left Wing: L1/L2 Triggers Top, Left Stick HIGH, D-Pad LOW
-   Right Wing: R1/R2 Triggers Top, Right Stick HIGH, Actions LOW
-   ------------------------------------------------------------- */
-.layout-ps5 .group-left {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto 1fr;
-  grid-template-areas:
-    "triggers triggers"
-    "stick dpad";
-  gap: 4px 10px;
-  align-items: center;
-}
-
-.layout-ps5 .left-triggers {
-  grid-area: triggers;
-  justify-content: flex-start;
-}
-
-/* LEFT STICK ELEVATED TO HIGH POSITION */
-.layout-ps5 .left-stick-pod {
-  grid-area: stick;
-  align-self: start;
-  margin-top: 2px;
-}
-
-/* D-PAD POSITIONED BELOW/INWARD */
-.layout-ps5 .dpad-pod {
-  grid-area: dpad;
-  align-self: center;
-}
-
-.layout-ps5 .group-right {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto 1fr;
-  grid-template-areas:
-    "triggers triggers"
-    "face stick";
-  gap: 4px 10px;
-  align-items: center;
-}
-
-.layout-ps5 .right-triggers {
-  grid-area: triggers;
-  justify-content: flex-end;
-}
-
-/* RIGHT STICK ELEVATED TO HIGH POSITION */
-.layout-ps5 .right-stick-pod {
-  grid-area: stick;
-  align-self: start;
-  margin-top: 2px;
-}
-
-/* ACTION BUTTONS POSITIONED BELOW/INWARD */
-.layout-ps5 .face-pod {
-  grid-area: face;
-  align-self: center;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2px 4px;
 }
 
 /* ==================== BUTTON BASE STYLES & HAPTICS ==================== */
@@ -494,10 +434,10 @@ body.theme-ps5 {
 .gamepad-dpad-btn {
   touch-action: none;
   cursor: pointer;
-  background: var(--btn-bg);
+  background: linear-gradient(145deg, #282e3b 0%, #171a23 100%);
   color: var(--text-white);
-  border: 2px solid var(--btn-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.16);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -507,105 +447,328 @@ body.theme-ps5 {
   line-height: 1;
 }
 
-/* DualSense Cyan Active Glow on Press */
+/* Pressed State: tactile mechanical sink */
 .gamepad-btn:active, .gamepad-btn.pressed,
 .gamepad-trigger-tap:active, .gamepad-trigger-tap.pressed,
 .gamepad-dpad-btn:active, .gamepad-dpad-btn.pressed {
-  transform: scale(0.92);
-  background: linear-gradient(145deg, #0284c7 0%, #0369a1 100%);
-  box-shadow: 0 0 20px var(--ps-cyan-glow), inset 0 2px 6px rgba(0, 0, 0, 0.8);
-  border-color: var(--ps-cyan);
+  transform: scale(0.93);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.85);
 }
 
-.btn-glyph {
-  font-size: calc(14px * var(--ui-scale));
+/* ==================== TRIGGERS (LT AIM & RT FIRE) ==================== */
+.shoulder-dock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.dock-left {
+  justify-content: flex-start;
+}
+
+.dock-right {
+  justify-content: flex-end;
+}
+
+/* Tactical Trigger Unit */
+.trigger-unit {
+  width: calc(72px * var(--ui-scale));
+  height: calc(48px * var(--ui-scale));
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  border-color: var(--brass-rim);
+}
+
+.trigger-core {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+}
+
+.trigger-icon {
+  width: calc(18px * var(--ui-scale));
+  height: calc(18px * var(--ui-scale));
+}
+
+.trigger-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.trigger-tag {
+  font-size: calc(12px * var(--ui-scale));
   font-weight: 900;
   letter-spacing: 0.5px;
 }
 
-/* Triggers (L2 & R2) and Bumpers (L1 & R1) */
-.trigger-pod {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.trigger-alt {
+  font-size: calc(7px * var(--ui-scale));
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
 }
 
-.trigger-btn {
-  width: calc(64px * var(--ui-scale));
-  height: calc(42px * var(--ui-scale));
-  border-radius: 12px;
-  background: linear-gradient(180deg, #2b3244, #181c28);
+.trigger-fill-level {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0%;
+  pointer-events: none;
+  transition: height 0.05s ease;
+  z-index: 1;
+}
+
+#meter-lt {
+  background: linear-gradient(0deg, rgba(0, 240, 255, 0.45) 0%, rgba(0, 240, 255, 0.1) 100%);
+  border-top: 2px solid var(--accent-cyan);
+}
+
+#meter-rt {
+  background: linear-gradient(0deg, rgba(255, 87, 34, 0.45) 0%, rgba(255, 87, 34, 0.1) 100%);
+  border-top: 2px solid var(--accent-fire);
+}
+
+/* LT Aim Scope Styling */
+.btn-lt {
   border-color: rgba(0, 240, 255, 0.35);
-  color: #38bdf8;
+  color: #bae6fd;
 }
 
-.bumper-btn {
-  width: calc(64px * var(--ui-scale));
-  height: calc(42px * var(--ui-scale));
+.btn-lt .scope-icon {
+  stroke: var(--accent-cyan);
+}
+
+.btn-lt:active, .btn-lt.pressed {
+  background: linear-gradient(145deg, #0284c7 0%, #0369a1 100%);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 18px var(--accent-cyan-glow), inset 0 2px 6px rgba(0, 0, 0, 0.8);
+  color: #ffffff;
+}
+
+/* RT Fire Flame Styling */
+.btn-rt {
+  border-color: rgba(255, 87, 34, 0.4);
+  color: #ffccbc;
+}
+
+.btn-rt .flame-icon {
+  fill: var(--accent-fire);
+}
+
+.btn-rt:active, .btn-rt.pressed {
+  background: linear-gradient(145deg, #ea580c 0%, #c2410c 100%);
+  border-color: #ff8a65;
+  box-shadow: 0 0 20px var(--accent-fire-glow), inset 0 2px 6px rgba(0, 0, 0, 0.8);
+  color: #ffffff;
+}
+
+/* Shoulder Bumpers (LB & RB) */
+.bumper-unit {
+  width: calc(62px * var(--ui-scale));
+  height: calc(44px * var(--ui-scale));
   border-radius: 12px;
-  background: linear-gradient(180deg, #242938, #141722);
+  border-color: var(--brass-rim);
 }
 
+.bumper-tag {
+  font-size: calc(12px * var(--ui-scale));
+  font-weight: 800;
+}
+
+.bumper-alt {
+  font-size: calc(7.5px * var(--ui-scale));
+  font-weight: 700;
+  color: var(--brass-bright);
+}
+
+.bumper-unit:active, .bumper-unit.pressed {
+  background: linear-gradient(145deg, #374151 0%, #1f2937 100%);
+  border-color: var(--brass-bright);
+}
+
+/* Calibration Sliders */
 .trigger-slider-dock {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgba(18, 22, 33, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(16, 19, 25, 0.8);
+  border: 1px solid var(--panel-border);
   border-radius: 8px;
   padding: 2px 6px;
-  width: 76px;
+  width: 70px;
 }
 
 .trigger-slider-dock input[type="range"] {
   width: 100%;
-  height: 16px;
+  height: 14px;
   margin: 0;
-  accent-color: var(--ps-cyan);
+  accent-color: var(--brass-bright);
   touch-action: none;
 }
 
 .trigger-val {
-  font-size: 8.5px;
+  font-size: 8px;
   font-family: monospace;
   color: var(--text-dim);
 }
 
-body.hide-slider-docks .trigger-slider-dock {
+body:not(.show-slider-docks) .trigger-slider-dock {
   display: none !important;
 }
 
-/* ==================== ENLARGED ANALOG JOYSTICKS ==================== */
-.analog-pod {
+/* ==================== LOWER DECKS (D-PAD & STICKS & FACE BUTTONS) ==================== */
+.thumb-deck {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.deck-left {
+  justify-content: flex-start;
+}
+
+.deck-right {
+  justify-content: flex-end;
+}
+
+/* ==================== TACTILE D-PAD DISC ==================== */
+.dpad-deck {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dpad-dish {
+  width: calc(130px * var(--ui-scale));
+  height: calc(130px * var(--ui-scale));
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #1a1e27 40%, #0d0f14 100%);
+  border: 3px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.8), inset 0 2px 6px rgba(0, 0, 0, 0.6);
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  opacity: var(--ui-opacity);
 }
 
-/* Increased from 130px to 142px diameter for comfortable continuous thumb movement */
-.joystick-pad {
-  width: calc(142px * var(--ui-scale));
-  height: calc(142px * var(--ui-scale));
+.dpad-dish::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, #171d2b 30%, #0c0e16 100%);
-  border: 3px solid rgba(0, 240, 255, 0.4);
-  box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.9), 0 0 16px rgba(0, 240, 255, 0.15);
+  border: 1px dashed var(--brass-rim);
+  pointer-events: none;
+}
+
+.dpad-facet {
+  width: calc(42px * var(--ui-scale));
+  height: calc(40px * var(--ui-scale));
+  background: linear-gradient(145deg, #272d3a 0%, #161922 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  z-index: 2;
+}
+
+.dpad-row-mid {
+  display: flex;
+  align-items: center;
+}
+
+.dpad-up {
+  border-radius: 12px 12px 2px 2px;
+  border-bottom: none;
+}
+
+.dpad-down {
+  border-radius: 2px 2px 12px 12px;
+  border-top: none;
+}
+
+.dpad-left {
+  border-radius: 12px 2px 2px 12px;
+  border-right: none;
+}
+
+.dpad-right {
+  border-radius: 2px 12px 12px 2px;
+  border-left: none;
+}
+
+.dpad-hub-crest {
+  width: calc(34px * var(--ui-scale));
+  height: calc(34px * var(--ui-scale));
+  background: #11141b;
+  border-radius: 50%;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.crest-brass-pin {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--brass-bright);
+  box-shadow: 0 0 6px var(--brass-rim);
+}
+
+.facet-glyph {
+  font-size: calc(13px * var(--ui-scale));
+  color: var(--text-cream);
+}
+
+.dpad-facet:active, .dpad-facet.pressed {
+  background: var(--brass-antique);
+  border-color: var(--brass-bright);
+}
+
+.dpad-facet:active .facet-glyph, .dpad-facet.pressed .facet-glyph {
+  color: #ffffff;
+}
+
+/* ==================== ANALOG STICKS (ADJUSTABLE SIZE) ==================== */
+.analog-deck {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.joystick-pad {
+  width: calc(var(--stick-size) * var(--ui-scale));
+  height: calc(var(--stick-size) * var(--ui-scale));
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #161a24 30%, #0a0b10 100%);
+  border: 3px solid rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.9), 0 4px 16px rgba(0, 0, 0, 0.65);
   position: relative;
   touch-action: none;
   opacity: var(--ui-opacity);
   cursor: pointer;
+  transition: border-color 0.1s ease, box-shadow 0.1s ease;
 }
 
-.joystick-cyan-halo {
+/* Outer Antique Brass & Steel Bezel */
+.joystick-outer-rim {
   position: absolute;
   inset: 2px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 240, 255, 0.2);
+  border: 1px solid var(--brass-rim);
   pointer-events: none;
 }
 
+/* Concentric Deadzone Guide Ring */
 .joystick-deadzone-guide {
   position: absolute;
   top: 50%;
@@ -614,16 +777,23 @@ body.hide-slider-docks .trigger-slider-dock {
   width: 24%;
   height: 24%;
   border-radius: 50%;
-  border: 1px dashed rgba(0, 240, 255, 0.3);
+  border: 1px dashed rgba(255, 255, 255, 0.18);
   pointer-events: none;
 }
 
+/* Glowing Cyan Active Touch Feedback */
+.joystick-pad:active, .joystick-pad.active {
+  border-color: var(--accent-cyan);
+  box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.9), 0 0 18px var(--accent-cyan-glow);
+}
+
+/* Tactile Sculpted Thumb Knob */
 .joystick-knob {
-  width: calc(60px * var(--ui-scale));
-  height: calc(60px * var(--ui-scale));
+  width: calc(58px * var(--ui-scale));
+  height: calc(58px * var(--ui-scale));
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 40%, #3d465c 0%, #1c202d 100%);
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: radial-gradient(circle at 40% 40%, #3a4254 0%, #1b1e27 100%);
+  border: 2px solid rgba(255, 255, 255, 0.35);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.4);
   position: absolute;
   top: 50%;
@@ -635,20 +805,21 @@ body.hide-slider-docks .trigger-slider-dock {
   justify-content: center;
 }
 
-.knob-cap {
-  width: calc(40px * var(--ui-scale));
-  height: calc(40px * var(--ui-scale));
+.knob-concentric-grip {
+  width: calc(38px * var(--ui-scale));
+  height: calc(38px * var(--ui-scale));
   border-radius: 50%;
-  border: 1px dashed rgba(0, 240, 255, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 2px dashed rgba(255, 255, 255, 0.22);
+  pointer-events: none;
 }
 
-.knob-label {
-  font-size: calc(10px * var(--ui-scale));
-  font-weight: 800;
-  color: #7dd3fc;
+.knob-center-dimple {
+  position: absolute;
+  width: calc(14px * var(--ui-scale));
+  height: calc(14px * var(--ui-scale));
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 .stick-telemetry {
@@ -667,62 +838,8 @@ body.hide-slider-docks .trigger-slider-dock {
   font-weight: 600;
 }
 
-/* ==================== D-PAD CROSS ==================== */
-.dpad-pod {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.dpad-cross {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  opacity: var(--ui-opacity);
-}
-
-.dpad-middle-row {
-  display: flex;
-  align-items: center;
-}
-
-.dpad-arrow {
-  width: calc(44px * var(--ui-scale));
-  height: calc(44px * var(--ui-scale));
-  font-size: calc(14px * var(--ui-scale));
-  font-weight: 900;
-  background: linear-gradient(145deg, #242938, #161822);
-}
-
-.dpad-up {
-  border-radius: 12px 12px 0 0;
-  border-bottom: none;
-}
-
-.dpad-down {
-  border-radius: 0 0 12px 12px;
-  border-top: none;
-}
-
-.dpad-left {
-  border-radius: 12px 0 0 12px;
-  border-right: none;
-}
-
-.dpad-right {
-  border-radius: 0 12px 12px 0;
-  border-left: none;
-}
-
-.dpad-center-hub {
-  width: calc(38px * var(--ui-scale));
-  height: calc(38px * var(--ui-scale));
-  background: #11141c;
-}
-
-/* ==================== PLAYSTATION GEOMETRIC FACE BUTTONS ==================== */
-.face-pod {
+/* ==================== ACTION BUTTONS (PLAYSTATION GEOMETRIC) ==================== */
+.face-deck {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -735,180 +852,171 @@ body.hide-slider-docks .trigger-slider-dock {
   opacity: var(--ui-opacity);
 }
 
-.face-middle-row {
+.face-mid-row {
   display: flex;
   gap: calc(26px * var(--ui-scale));
-  margin: calc(4px * var(--ui-scale)) 0;
+  margin: calc(3px * var(--ui-scale)) 0;
 }
 
 .face-btn {
   width: calc(52px * var(--ui-scale));
   height: calc(52px * var(--ui-scale));
   border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.2);
 }
 
-.face-letter {
+.face-symbol {
   font-size: calc(20px * var(--ui-scale));
   font-weight: 900;
+  line-height: 1;
 }
 
-/* Iconic PlayStation Button Colors */
-.ps5-triangle {
+.face-sub {
+  font-size: calc(7px * var(--ui-scale));
+  font-weight: 800;
+  color: var(--text-dim);
+  line-height: 1;
+  margin-top: 1px;
+}
+
+/* Triangle (Top - Green) */
+.btn-triangle {
   border-color: var(--color-triangle);
   color: #34d399;
 }
-.ps5-triangle:active, .ps5-triangle.pressed {
+.btn-triangle:active, .btn-triangle.pressed {
   background: var(--color-triangle);
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.8), inset 0 2px 6px rgba(0, 0, 0, 0.8);
   color: #ffffff;
 }
 
-.ps5-square {
+/* Square (Left - Pink) */
+.btn-square {
   border-color: var(--color-square);
   color: #f472b6;
 }
-.ps5-square:active, .ps5-square.pressed {
+.btn-square:active, .btn-square.pressed {
   background: var(--color-square);
-  box-shadow: 0 0 20px rgba(236, 72, 153, 0.8);
+  box-shadow: 0 0 18px rgba(236, 72, 153, 0.8), inset 0 2px 6px rgba(0, 0, 0, 0.8);
   color: #ffffff;
 }
 
-.ps5-circle {
+/* Circle (Right - Red) */
+.btn-circle {
   border-color: var(--color-circle);
   color: #f87171;
 }
-.ps5-circle:active, .ps5-circle.pressed {
+.btn-circle:active, .btn-circle.pressed {
   background: var(--color-circle);
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.8), inset 0 2px 6px rgba(0, 0, 0, 0.8);
   color: #ffffff;
 }
 
-.ps5-cross {
+/* Cross (Bottom - Blue) */
+.btn-cross {
   border-color: var(--color-cross);
   color: #60a5fa;
 }
-.ps5-cross:active, .ps5-cross.pressed {
+.btn-cross:active, .btn-cross.pressed {
   background: var(--color-cross);
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+  box-shadow: 0 0 18px rgba(59, 130, 246, 0.8), inset 0 2px 6px rgba(0, 0, 0, 0.8);
   color: #ffffff;
 }
 
-/* ==================== CENTER TOUCHPAD & SYSTEM CLUSTER ==================== */
-.group-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-  padding: 4px 8px;
-  z-index: 10;
-}
-
-.center-top-cluster {
+/* ==================== CENTER UTILITY & SYSTEM HUB ==================== */
+.center-nav-row {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.center-btn {
-  width: calc(52px * var(--ui-scale));
-  height: calc(38px * var(--ui-scale));
-  border-radius: 10px;
-  background: linear-gradient(180deg, #242938, #141722);
+.center-util-btn {
+  width: calc(48px * var(--ui-scale));
+  height: calc(36px * var(--ui-scale));
+  border-radius: 8px;
+  border-color: var(--brass-rim);
 }
 
-.glyph-center {
+.util-glyph {
   font-size: calc(13px * var(--ui-scale));
   font-weight: 900;
 }
 
-.sub-center {
+.util-label {
   font-size: calc(6.5px * var(--ui-scale));
   font-weight: 700;
   color: var(--text-dim);
   margin-top: 1px;
 }
 
-/* PS5 Touchpad Card with Glowing Lightbar */
-.ps5-touchpad-card {
+/* Emergency Release All Module */
+.emergency-module {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgba(18, 22, 33, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  padding: 4px 10px;
-  width: calc(120px * var(--ui-scale));
-  position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  gap: 2px;
 }
 
-.touchpad-lightbar {
-  width: 70%;
-  height: 2px;
-  background: var(--ps-cyan);
-  box-shadow: 0 0 8px var(--ps-cyan);
-  border-radius: 2px;
-  margin-bottom: 3px;
-}
-
-.ps5-touch-btn {
-  background: transparent;
-  border: none;
-  box-shadow: none;
+.btn-emergency {
+  width: calc(76px * var(--ui-scale));
+  height: calc(40px * var(--ui-scale));
+  border-radius: 999px;
+  background: radial-gradient(circle at 40% 40%, #dc2626 0%, #991b1b 100%);
+  border: 2px solid #f87171;
   color: #ffffff;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.3);
   cursor: pointer;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 2px 0;
+  justify-content: center;
+  gap: 4px;
   touch-action: none;
 }
 
-.ps5-touch-btn:active {
-  transform: scale(0.94);
+.btn-emergency:active {
+  transform: scale(0.92);
+  background: #7f1d1d;
 }
 
-.glyph-touchpad {
+.emergency-icon {
+  font-size: calc(11px * var(--ui-scale));
+}
+
+.emergency-label {
   font-size: calc(8px * var(--ui-scale));
-  font-weight: 800;
-  letter-spacing: 0.8px;
-  color: #7dd3fc;
-}
-
-.txt-emergency {
-  font-size: calc(10px * var(--ui-scale));
   font-weight: 900;
-  color: #f87171;
+  letter-spacing: 0.5px;
 }
 
-.badge-neutral {
+.neutral-badge {
   font-size: 7.5px;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--text-dim);
-  margin-top: 1px;
 }
 
-.center-stick-clicks {
+/* Center Stick-Click Pills (L3 & R3) */
+.center-clicks-row {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 4px;
 }
 
-.click-btn {
-  width: calc(68px * var(--ui-scale));
+.click-pill-btn {
+  min-width: calc(70px * var(--ui-scale));
   height: calc(34px * var(--ui-scale));
   border-radius: 999px;
-  background: linear-gradient(180deg, #242938, #141722);
+  padding: 4px 8px;
+  border-color: var(--brass-rim);
 }
 
 .click-glyph {
-  font-size: calc(9.5px * var(--ui-scale));
+  font-size: calc(9px * var(--ui-scale));
   font-weight: 800;
-  color: #94a3b8;
+  color: var(--brass-bright);
+  white-space: nowrap;
 }
 
 /* ==================== SETTINGS MODAL / DRAWER ==================== */
@@ -916,7 +1024,7 @@ body.hide-slider-docks .trigger-slider-dock {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.82);
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 2000;
@@ -930,8 +1038,8 @@ body.hide-slider-docks .trigger-slider-dock {
 }
 
 .settings-dialog {
-  background: #141824;
-  border: 1px solid var(--panel-border);
+  background: #12151c;
+  border: 1px solid var(--brass-rim);
   border-radius: 14px;
   width: 100%;
   max-width: 440px;
@@ -953,7 +1061,7 @@ body.hide-slider-docks .trigger-slider-dock {
 .settings-header h3 {
   font-size: 15px;
   font-weight: 700;
-  color: var(--text-white);
+  color: var(--brass-bright);
 }
 
 .close-btn {
@@ -985,13 +1093,13 @@ body.hide-slider-docks .trigger-slider-dock {
 }
 
 .setting-item label span {
-  color: var(--ps-cyan);
+  color: var(--brass-bright);
   font-family: monospace;
 }
 
 .setting-item input[type="range"] {
   width: 100%;
-  accent-color: var(--ps-cyan);
+  accent-color: var(--brass-bright);
   cursor: pointer;
 }
 
@@ -1013,12 +1121,12 @@ body.hide-slider-docks .trigger-slider-dock {
 .toggle-label input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: var(--ps-cyan);
+  accent-color: var(--brass-bright);
   cursor: pointer;
 }
 
 .mapping-note {
-  background: rgba(10, 13, 20, 0.7);
+  background: rgba(10, 12, 17, 0.7);
   border: 1px solid var(--panel-border);
   border-radius: 8px;
   padding: 8px 12px;
@@ -1027,7 +1135,7 @@ body.hide-slider-docks .trigger-slider-dock {
 
 .mapping-note summary {
   cursor: pointer;
-  color: #38bdf8;
+  color: var(--brass-bright);
   font-weight: 700;
   outline: none;
   margin-bottom: 4px;
@@ -1084,5 +1192,6 @@ body.hide-slider-docks .trigger-slider-dock {
 }
 
 .test-pulse-btn:active {
-  background: #0284c7;
+  background: var(--brass-bright);
+  color: #121008;
 }

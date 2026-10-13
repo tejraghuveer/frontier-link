@@ -32,39 +32,41 @@ FastAPI Server (Validation, Clamping, Watchdog Timeout, Telemetry)
 
 ---
 
-## 2. PS5 DualSense High-Stick Layout & Ergonomics
+## 2. Western Tactical & Console Ergonomics (Premium Redesign)
 
-### A. Elevated High-Stick Architecture
-Designed specifically for natural thumb resting posture during handheld mobile gameplay:
-1. **Left Thumb Wing**:
-   - **L2 Trigger & L1 Bumper**: Top-left corner with instant tap button + fine analog slider (0.00 – 1.00).
-   - **Left Analog Joystick (HIGH)**: Elevated to the upper resting zone, enlarged to 142px diameter with cyan LED halo lighting, deadzone guide ring, and L3 stick-click indicator.
-   - **4-Way D-Pad (LOW)**: Directional cross positioned below and inward from the high stick for fast thumb-rolling access.
-2. **Right Thumb Wing**:
-   - **R2 Trigger & R1 Bumper**: Top-right corner with instant tap button + fine analog slider.
-   - **Right Analog Joystick (HIGH)**: Elevated to the upper resting zone for effortless camera control.
-   - **PlayStation Geometric Face Buttons (LOW)**:
-     - **△ Triangle (Emerald)**: Top action
-     - **□ Square (Pink)**: Left action
-     - **◯ Circle (Red)**: Right action
-     - **✕ Cross (Blue)**: Bottom action
-3. **Center Touchpad & System Hub**:
-   - **PS5 Touchpad Card**: Center touch surface with cyan illuminated lightbar and integrated **RESET ALL** emergency neutralization button.
-   - **Create / Share (`|<<`)** & **Options (`☰`)** buttons.
-   - **L3 & R3 Click Pills**: Dedicated stick click buttons for games requiring frequent thumbstick presses.
+### A. Visual Style & Atmosphere
+Inspired by Red Dead Redemption 2's Western atmosphere combined with high-precision modern console ergonomics:
+- **Palette**: Deep charcoal and near-black canvas (`#07080b`), brushed steel plates (`#242934`), and antique-brass rims (`#d4a743`).
+- **Accent Signals**: Electric cyan highlights for navigation and active analog sticks, red-orange flame glow for firing, and distinct PlayStation geometric accents.
+- **Surface Detailing**: Tactile mechanical sink pressed states, knurled thumb grips, dashed concentric guides, and zero distracting visual clutter.
 
-### B. Dynamic 5-Layout Presets
-Switch between layout presets on the fly via the top navigation dropdown:
-1. **PS5 DualSense (High-Sticks)**: Symmetrical elevated sticks, PlayStation geometric symbols, touchpad reset.
-2. **Xbox Official (Asymmetrical)**: Left stick high, D-Pad low, face buttons high, right stick low.
-3. **Switch Pro (Classic Arcade)**: Large circular buttons, classic cross D-pad.
-4. **Mobile Claw (Esports Touch)**: Corner-docked triggers, curved thumb sweep arcs.
-5. **Steam Deck (Top Dual-Sticks)**: Dual top thumbsticks with inward D-pad and buttons.
+### B. Control Zone Architecture
+1. **Left Thumb Pod**:
+   - **LT Aim Scope Trigger**: Tactical unit with an intuitive circular crosshair/scope icon, "LT" badge, and "L2 • AIM" subtitle. Includes a responsive vertical fill meter (`#meter-lt`) and supports both instant tap and smooth vertical drag depth modulation (0.00 – 1.00).
+   - **LB Bumper**: Tactile shoulder bumper ("LB / L1").
+   - **Tactile D-Pad Dish**: Directional cross dish with embossed faceted directional indicators (`▲`, `◀`, `▼`, `▶`) and antique-brass center hub pin. Supports independent and diagonal inputs.
+   - **Left Analog Stick**: High-precision movement stick with knurled grip, brass rim, cyan active glow on touch, real-time coordinate readout (`LX`, `LY`), and user-adjustable diameter (115px–165px via Settings).
+   - **Precision Slider Dock**: Optional slider dock for fine calibration (toggleable in Settings).
+
+2. **Center Utility & Safety Hub**:
+   - **View & Menu Buttons**: Quick access map/share (`⧉ VIEW`) and pause options (`☰ MENU`).
+   - **Prominent Emergency Release Module**: High-contrast, shielded red neutralizer button (`⚡ RELEASE ALL`) with live `Neutral` / `Active` status badge.
+   - **L3 & R3 Click Pills**: Dedicated stick-click buttons located centrally between thumb areas.
+
+3. **Right Thumb Pod**:
+   - **RT Fire Trigger**: Tactical unit featuring a bullet/flame icon with red-orange accent glow, "RT" badge, "R2 • FIRE" subtitle, vertical fill meter (`#meter-rt`), and drag modulation.
+   - **RB Bumper**: Tactile shoulder bumper ("RB / R1").
+   - **Right Analog Stick**: Dedicated camera stick with knurled grip, cyan touch halo, and real-time coordinates (`RX`, `RY`).
+   - **PlayStation Geometric Face Diamond**:
+     - **△ Triangle (Emerald Green)**: Mount / Contextual (`Y`)
+     - **□ Square (Hot Pink)**: Reload / Dive (`X`)
+     - **◯ Circle (Crimson Red)**: Crouch / Cancel (`B`)
+     - **✕ Cross (Sky Blue)**: Jump / Sprint (`A`)
 
 ### C. Touch Quality & Failsafe Guarantees
-- **Multi-Touch Pointer Capture**: Every button and joystick uses `setPointerCapture(pointerId)` for simultaneous multi-finger operation without cross-finger interference.
+- **Multi-Touch Pointer Capture**: Every button, trigger, and joystick uses `setPointerCapture(pointerId)` for simultaneous multi-finger operation without cross-finger interference.
 - **Lost Pointer Capture Failsafe**: Binds `lostpointercapture` alongside `pointerup` and `pointercancel` so controls snap back to neutral immediately if system gestures interrupt touch.
-- **Context Menu Suppression**: `contextmenu` is prevented on interactive game buttons and joystick surfaces.
+- **Context Menu Suppression**: `contextmenu` is prevented on all interactive controller surfaces.
 - **Haptic Vibration**: Integrated Web Vibration API (`navigator.vibrate`) for physical tactile feedback on button press.
 
 ---

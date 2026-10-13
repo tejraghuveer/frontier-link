@@ -74,14 +74,17 @@ Command: `python -m pytest tests/ -v`
 
 ---
 
-## 3. PS5 DualSense High-Stick Ergonomics Verification
+## 3. Western Tactical UI & Control Verification
 
 | Capability | Target Behavior | Verification Status | Notes |
 |---|---|---|---|
-| **Elevated Dual Sticks (High)** | Left and Right sticks positioned high under thumbs | **VERIFIED** | Symmetrical high position; comfortable continuous movement |
-| **Enlarged 142px Stick Diameter** | Larger analog surface area | **VERIFIED** | 142px outer pad with 60px tactile thumb cap |
-| **PlayStation Action Buttons** | Geometric symbols: △, □, ◯, ✕ | **VERIFIED** | Emerald, Pink, Coral Red, and PlayStation Blue |
-| **Center Touchpad Reset** | Center touch surface with cyan lightbar | **VERIFIED** | One-tap emergency neutralization |
+| **LT Aim Scope Trigger** | Tactical scope icon, "LT" label, L2 • AIM subtitle, fill meter | **VERIFIED** | Instant tap + vertical drag modulation (0.00 – 1.00); `#meter-lt` active |
+| **RT Fire Flame Trigger** | Red-orange flame icon, "RT" label, R2 • FIRE subtitle, fill meter | **VERIFIED** | Instant tap + vertical drag modulation (0.00 – 1.00); `#meter-rt` active |
+| **Shoulder Bumpers (LB & RB)** | Identifiable L1/R1 bumpers with brass border | **VERIFIED** | Tactile mechanical sink pressed state |
+| **Tactile Directional D-Pad** | Embossed directional dish with brass center pin | **VERIFIED** | Supports independent and diagonal combinations; no stuck facets |
+| **Enlarged Analog Sticks** | Dual sticks with knurled grip, brass rim, cyan active glow | **VERIFIED** | User-adjustable diameter (115px–165px, default 144px via settings) |
+| **PlayStation Action Diamond** | Geometric symbols: △, □, ◯, ✕ | **VERIFIED** | Emerald (`Y`), Pink (`X`), Red (`B`), Blue (`A`) with distinct spacing |
+| **Center Utility Hub** | View, prominent Emergency Release, Menu, L3/R3 click pills | **VERIFIED** | High-contrast emergency neutralizer with live status badge |
 | **Pointer Capture (`setPointerCapture`)** | Independent multi-touch without finger collision | **VERIFIED** | Simultaneous stick movement + trigger + button |
 | **Edge Gesture Failsafe (`lostpointercapture`)** | Buttons/sticks reset to neutral on gesture interruption | **VERIFIED** | Prevents stuck inputs on OS drawer swipes |
 | **Haptic Vibration** | Physical click vibration on touch | **VERIFIED** | Integrated Web Vibration API |
